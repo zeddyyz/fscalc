@@ -3,7 +3,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fscalc/free/components/cupertino_close_icon.dart';
 import 'package:fscalc/free/components/cupertino_slideup_bar.dart';
-import 'package:fscalc/free/features/forex/screens/forex_percent.dart';
 import 'package:fscalc/free/utilities/constants.dart';
 
 class ForexScreen extends StatefulWidget {
@@ -16,6 +15,7 @@ class ForexScreen extends StatefulWidget {
 class _ForexScreenState extends State<ForexScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
+  late int _body = 0;
 
   @override
   void initState() {
@@ -33,76 +33,112 @@ class _ForexScreenState extends State<ForexScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: kBackgroundColor,
-      body: SafeArea(
-        bottom: false,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const SizedBox(height: 20),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 180,
+              decoration: BoxDecoration(
+                color: kThemeRed,
+                borderRadius: BorderRadius.vertical(
+                  bottom: Radius.elliptical(screenWidth, 40),
+                ),
+              ),
+              child: SafeArea(
+                bottom: false,
+                child: Column(
                   children: [
-                    const Text(
-                      "Forex",
-                      style: TextStyle(
-                        color: kBlack,
-                        fontSize: 28,
-                        fontWeight: FontWeight.w600,
+                    const SizedBox(height: 10),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          const Text(
+                            "Forex",
+                            style: TextStyle(
+                              color: kWhite,
+                              fontSize: 28,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const Spacer(),
+                          IconButton(
+                            onPressed: () => _infoSlideUp(),
+                            icon: const Icon(
+                              Icons.info_outline_rounded,
+                              size: 28,
+                              color: kBlack,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                    const Spacer(),
-                    IconButton(
-                      onPressed: () => _infoSlideUp(),
-                      icon: const Icon(
-                        Icons.info_outline_rounded,
-                        size: 28,
-                        color: kThemeRed,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8, top: 8),
+                      child: TabBar(
+                        controller: _tabController,
+                        indicatorSize: TabBarIndicatorSize.tab,
+                        unselectedLabelColor: kBlack,
+                        indicatorPadding:
+                            const EdgeInsets.symmetric(horizontal: -2),
+                        isScrollable: true,
+                        indicator: BubbleTabIndicator(
+                          indicatorHeight: 28,
+                          indicatorColor: kBlack.withOpacity(0.09),
+                          insets: const EdgeInsets.symmetric(horizontal: 0),
+                          tabBarIndicatorSize: TabBarIndicatorSize.tab,
+                        ),
+                        tabs: const [
+                          Tab(
+                            child: Text("Percent"),
+                          ),
+                          Tab(
+                            child: Text("Fixed"),
+                          ),
+                        ],
+                        onTap: (int index) {
+                          switch (index) {
+                            case 0:
+                              if (!mounted) return;
+                              setState(() {
+                                _body = 0;
+                              });
+                              break;
+                            case 1:
+                              if (!mounted) return;
+                              setState(() {
+                                _body = 1;
+                              });
+                              break;
+                            default:
+                              break;
+                          }
+                        },
                       ),
                     ),
                   ],
                 ),
               ),
-              Align(
-                alignment: Alignment.centerLeft,
-                child: Padding(
-                  padding: const EdgeInsets.only(left: 8),
-                  child: TabBar(
-                    controller: _tabController,
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    unselectedLabelColor: kBlack,
-                    indicatorPadding:
-                        const EdgeInsets.symmetric(horizontal: -2),
-                    isScrollable: true,
-                    indicator: BubbleTabIndicator(
-                      indicatorHeight: 28,
-                      indicatorColor: kThemeRed.withOpacity(0.9),
-                      insets: const EdgeInsets.symmetric(horizontal: 0),
-                      tabBarIndicatorSize: TabBarIndicatorSize.tab,
-                    ),
-                    tabs: const [
-                      Tab(
-                        child: Text("Percent"),
-                      ),
-                      Tab(
-                        child: Text("Fixed"),
-                      ),
-                    ],
-                    onTap: (int index) {
-                      setState(() {
-                        if (index == 0) {
-                          const ForexPercentScreen();
-                        }
-                      });
-                    },
-                  ),
-                ),
-              ),
-            ],
-          ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+              child: _body == 0 ? _percentView() : _fixedView(),
+            ),
+          ],
         ),
       ),
     );
+  }
+
+  Widget _percentView() {
+    return Column(
+      children: [],
+    );
+  }
+
+  Widget _fixedView() {
+    return Container(child: Text("FIXED", style: TextStyle(color: kThemeRed)));
   }
 
   void _infoSlideUp() {
