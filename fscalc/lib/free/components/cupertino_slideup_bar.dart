@@ -10,6 +10,7 @@ class CupertinoSlideUpBar extends StatelessWidget {
       child: Container(
         width: 36,
         height: 4.5,
+        margin: const EdgeInsets.only(top: 8),
         decoration: BoxDecoration(
           color: CupertinoColors.inactiveGray.withOpacity(0.4),
           borderRadius: BorderRadius.circular(16),

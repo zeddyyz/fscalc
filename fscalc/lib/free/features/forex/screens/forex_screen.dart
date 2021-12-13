@@ -1,8 +1,11 @@
 import 'package:bubble_tab_indicator/bubble_tab_indicator.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:fscalc/free/components/cupertino_close_icon.dart';
+import 'package:flutter/painting.dart';
 import 'package:fscalc/free/components/cupertino_slideup_bar.dart';
+import 'package:fscalc/free/components/cupertino_slideup_text.dart';
+import 'package:fscalc/free/features/forex/screens/forex_fixed_screen.dart';
+import 'package:fscalc/free/features/forex/screens/forex_percent_screen.dart';
 import 'package:fscalc/free/utilities/constants.dart';
 
 class ForexScreen extends StatefulWidget {
@@ -65,10 +68,10 @@ class _ForexScreenState extends State<ForexScreen>
                           const Spacer(),
                           IconButton(
                             onPressed: () => _infoSlideUp(),
-                            icon: const Icon(
+                            icon: Icon(
                               Icons.info_outline_rounded,
                               size: 28,
-                              color: kBlack,
+                              color: kWhite.withOpacity(0.8),
                             ),
                           ),
                         ],
@@ -80,13 +83,22 @@ class _ForexScreenState extends State<ForexScreen>
                         controller: _tabController,
                         indicatorSize: TabBarIndicatorSize.tab,
                         unselectedLabelColor: kBlack,
+                        labelStyle: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
+                        unselectedLabelStyle: const TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: 16,
+                        ),
                         indicatorPadding:
                             const EdgeInsets.symmetric(horizontal: -2),
                         isScrollable: true,
                         indicator: BubbleTabIndicator(
-                          indicatorHeight: 28,
+                          indicatorHeight: 30,
                           indicatorColor: kBlack.withOpacity(0.09),
-                          insets: const EdgeInsets.symmetric(horizontal: 0),
+                          insets: const EdgeInsets.symmetric(horizontal: -4),
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
                           tabBarIndicatorSize: TabBarIndicatorSize.tab,
                         ),
                         tabs: const [
@@ -122,23 +134,15 @@ class _ForexScreenState extends State<ForexScreen>
               ),
             ),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              child: _body == 0 ? _percentView() : _fixedView(),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
+              child: _body == 0
+                  ? const ForexPercentScreen()
+                  : const ForexFixedScreen(),
             ),
           ],
         ),
       ),
     );
-  }
-
-  Widget _percentView() {
-    return Column(
-      children: [],
-    );
-  }
-
-  Widget _fixedView() {
-    return Container(child: Text("FIXED", style: TextStyle(color: kThemeRed)));
   }
 
   void _infoSlideUp() {
@@ -166,29 +170,8 @@ class _ForexScreenState extends State<ForexScreen>
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 16),
                   const Center(child: CupertinoSlideUpBar()),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                            left: 25, top: 20, right: 15, bottom: 10),
-                        child: Text(
-                          "Forex Terms",
-                          style: TextStyle(
-                            foreground: Paint()..shader = termsTitle,
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.only(right: 16, top: 4),
-                        child: CupertinoCloseIcon(),
-                      ),
-                    ],
-                  ),
+                  const CupertinoSlideUpTitle(title: "Forex Terms"),
                   Expanded(
                     child: ListView(
                       controller: controller,

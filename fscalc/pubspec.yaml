@@ -38,6 +38,7 @@ dependencies:
   app_tracking_transparency: ^2.0.2+1
   persistent_bottom_nav_bar: ^4.0.2
   bubble_tab_indicator: ^0.1.6
+  google_mobile_ads: ^1.0.1
 
 dev_dependencies:
   flutter_test:
