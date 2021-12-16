@@ -6,7 +6,9 @@ import 'package:fscalc/free/components/cupertino_slideup_bar.dart';
 import 'package:fscalc/free/components/cupertino_slideup_text.dart';
 import 'package:fscalc/free/features/forex/screens/forex_fixed_screen.dart';
 import 'package:fscalc/free/features/forex/screens/forex_percent_screen.dart';
+import 'package:fscalc/free/models/ads_model.dart';
 import 'package:fscalc/free/utilities/constants.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class ForexScreen extends StatefulWidget {
   const ForexScreen({Key? key}) : super(key: key);
@@ -20,10 +22,34 @@ class _ForexScreenState extends State<ForexScreen>
   late TabController _tabController;
   late int _body = 0;
 
+  late BannerAd _bannerAd;
+  bool _isBannerAdReady = false;
+
   @override
   void initState() {
     super.initState();
     _tabController = TabController(initialIndex: 0, length: 2, vsync: this);
+
+    _bannerAd = BannerAd(
+      adUnitId: AdsModel.bannerTestUnitId,
+      request: const AdRequest(),
+      size: AdSize.banner,
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          if (!mounted) return;
+          setState(() {
+            _isBannerAdReady = true;
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          print('Failed to load a banner ad: ${err.message}');
+          _isBannerAdReady = false;
+          ad.dispose();
+        },
+      ),
+    );
+
+    _bannerAd.load();
   }
 
   @override
@@ -139,6 +165,17 @@ class _ForexScreenState extends State<ForexScreen>
                   ? const ForexPercentScreen()
                   : const ForexFixedScreen(),
             ),
+            _isBannerAdReady ? const SizedBox(height: 20) : Container(),
+            if (_isBannerAdReady)
+              Align(
+                alignment: Alignment.topCenter,
+                child: SizedBox(
+                  width: _bannerAd.size.width.toDouble(),
+                  height: _bannerAd.size.height.toDouble(),
+                  child: AdWidget(ad: _bannerAd),
+                ),
+              ),
+            const SizedBox(height: 36),
           ],
         ),
       ),
