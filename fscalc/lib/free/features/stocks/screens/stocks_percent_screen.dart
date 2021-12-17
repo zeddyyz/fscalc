@@ -4,14 +4,14 @@ import 'package:fscalc/free/components/custom_button.dart';
 import 'package:fscalc/free/components/custom_textfield.dart';
 import 'package:fscalc/free/utilities/constants.dart';
 
-class ForexPercentScreen extends StatefulWidget {
-  const ForexPercentScreen({Key? key}) : super(key: key);
+class StocksPercentScreen extends StatefulWidget {
+  const StocksPercentScreen({Key? key}) : super(key: key);
 
   @override
-  _ForexPercentScreenState createState() => _ForexPercentScreenState();
+  _StocksPercentScreenState createState() => _StocksPercentScreenState();
 }
 
-class _ForexPercentScreenState extends State<ForexPercentScreen> {
+class _StocksPercentScreenState extends State<StocksPercentScreen> {
   final TextEditingController _accountSizeController = TextEditingController();
   final TextEditingController _percentRiskController = TextEditingController();
   final TextEditingController _entryPriceController = TextEditingController();
@@ -47,7 +47,7 @@ class _ForexPercentScreenState extends State<ForexPercentScreen> {
 
   // Calculator values
   double? accountSize, percentRisk, entryPrice, targetPrice, stopLoss;
-  String? riskAmountText, lotSizeText, returnText;
+  String? riskAmountText, sharesAmountText, returnText;
   String? errorMessageText;
   bool nullValues = true;
 
@@ -79,30 +79,19 @@ class _ForexPercentScreenState extends State<ForexPercentScreen> {
         double dollarRisk = accountSize! * (percentRisk! / 100);
         riskAmountText = "Investment: \$" + dollarRisk.toStringAsFixed(2);
 
-        if (entryPrice! > targetPrice!) {
-          // Short trade
-          // Lot size calculation
-          double stopLossPips = (stopLoss! * 10000) - (entryPrice! * 10000);
-          double lots = (dollarRisk / stopLossPips) / 10;
-          lotSizeText = "Lot Size: " + lots.toStringAsFixed(2);
-          // Return on investment calculation
-          double returnCalculation =
-              (entryPrice! * 10000) - (targetPrice! * 10000);
-          String resultText =
-              (returnCalculation * (lots * 10)).toStringAsFixed(2);
-          returnText = "Potential Return: \$" + resultText;
+        double sharesAmount = dollarRisk / entryPrice!;
+
+        if (sharesAmount < 1.00) {
+          sharesAmountText = "Don't trade. It's not worth it.";
         } else {
           // Long trade
-          // Lot size calculation
-          double stopLossPips = (entryPrice! * 10000) - (stopLoss! * 10000);
-          double lots = (dollarRisk / stopLossPips) / 10;
-          lotSizeText = "Lot Size: " + lots.toStringAsFixed(2);
-          // Return on investment calculation
-          double returnCalculation =
-              (targetPrice! * 10000) - (entryPrice! * 10000);
-          String resultText =
-              (returnCalculation * (lots * 10)).toStringAsFixed(2);
-          returnText = "Potential Return: \$" + resultText;
+          // Shares calculation
+          sharesAmountText =
+              "Max Shares: " + sharesAmount.floor().toStringAsFixed(0);
+
+          double potentialReturn = (targetPrice! - entryPrice!) * sharesAmount;
+          returnText =
+              "Potential Return: \$" + potentialReturn.toStringAsFixed(2);
         }
       }
     });
@@ -293,7 +282,7 @@ class _ForexPercentScreenState extends State<ForexPercentScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 5),
                       child: Text(
-                        '$lotSizeText',
+                        '$sharesAmountText',
                         style: const TextStyle(
                           fontSize: 21,
                           color: kBlack,

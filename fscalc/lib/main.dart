@@ -4,6 +4,9 @@ import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fscalc/free/components/bottom_nav.dart';
+import 'package:fscalc/free/controller/custom_provider.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,28 +34,56 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  late SharedPreferences _sharedPreferences;
+  String url = "";
+
+  @override
+  void initState() {
+    super.initState();
+    _sharedPreferencesInitialization().then((value) => {
+          _sharedPreferencesChart(),
+        });
+  }
+
+  Future<void> _sharedPreferencesInitialization() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+    await _sharedPreferences.reload();
+  }
+
+  Future<void> _sharedPreferencesChart() async {
+    setState(() {
+      url = _sharedPreferences.getString("chart_preference")!;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Fscalc',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        appBarTheme: const AppBarTheme(
-          systemOverlayStyle: SystemUiOverlayStyle.light,
-        ),
-        splashColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-      ),
-      home: GestureDetector(
-        child: const BottomNav(),
-        onTap: () {
-          FocusScopeNode currentFocus = FocusScope.of(context);
-          if (!currentFocus.hasPrimaryFocus &&
-              currentFocus.focusedChild != null) {
-            FocusManager.instance.primaryFocus!.unfocus();
-          }
-        },
-      ),
-    );
+    return ChangeNotifierProvider(
+        create: (context) => CustomProvider(
+              url: url,
+            ),
+        builder: (context, snapshot) {
+          return MaterialApp(
+            title: 'Fscalc',
+            debugShowCheckedModeBanner: false,
+            theme: ThemeData(
+              appBarTheme: const AppBarTheme(
+                systemOverlayStyle: SystemUiOverlayStyle.light,
+              ),
+              splashColor: Colors.transparent,
+              highlightColor: Colors.transparent,
+            ),
+            home: GestureDetector(
+              child: const BottomNav(),
+              onTap: () {
+                FocusScopeNode currentFocus = FocusScope.of(context);
+                if (!currentFocus.hasPrimaryFocus &&
+                    currentFocus.focusedChild != null) {
+                  FocusManager.instance.primaryFocus!.unfocus();
+                }
+              },
+            ),
+          );
+        });
   }
 }

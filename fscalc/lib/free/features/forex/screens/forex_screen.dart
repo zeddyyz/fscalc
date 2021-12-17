@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:fscalc/free/components/cupertino_slideup_bar.dart';
 import 'package:fscalc/free/components/cupertino_slideup_text.dart';
-import 'package:fscalc/free/features/forex/screens/forex_fixed_screen.dart';
 import 'package:fscalc/free/features/forex/screens/forex_percent_screen.dart';
 import 'package:fscalc/free/models/ads_model.dart';
 import 'package:fscalc/free/utilities/constants.dart';
@@ -20,7 +19,6 @@ class ForexScreen extends StatefulWidget {
 class _ForexScreenState extends State<ForexScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
-  late int _body = 0;
 
   late BannerAd _bannerAd;
   bool _isBannerAdReady = false;
@@ -28,7 +26,7 @@ class _ForexScreenState extends State<ForexScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(initialIndex: 0, length: 2, vsync: this);
+    _tabController = TabController(initialIndex: 0, length: 1, vsync: this);
 
     _bannerAd = BannerAd(
       adUnitId: AdsModel.bannerTestUnitId,
@@ -131,39 +129,16 @@ class _ForexScreenState extends State<ForexScreen>
                           Tab(
                             child: Text("Percent"),
                           ),
-                          Tab(
-                            child: Text("Fixed"),
-                          ),
                         ],
-                        onTap: (int index) {
-                          switch (index) {
-                            case 0:
-                              if (!mounted) return;
-                              setState(() {
-                                _body = 0;
-                              });
-                              break;
-                            case 1:
-                              if (!mounted) return;
-                              setState(() {
-                                _body = 1;
-                              });
-                              break;
-                            default:
-                              break;
-                          }
-                        },
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
-              child: _body == 0
-                  ? const ForexPercentScreen()
-                  : const ForexFixedScreen(),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 28),
+              child: ForexPercentScreen(),
             ),
             _isBannerAdReady ? const SizedBox(height: 20) : Container(),
             if (_isBannerAdReady)
@@ -189,150 +164,145 @@ class _ForexScreenState extends State<ForexScreen>
       backgroundColor: kBackgroundColor.withOpacity(0),
       context: context,
       builder: (BuildContext context) => DraggableScrollableSheet(
-          initialChildSize: 0.9,
-          minChildSize: 0.3,
-          maxChildSize: 0.95,
-          builder: (_, controller) {
-            return Container(
-              decoration: BoxDecoration(
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
-                color: kBackgroundColor,
+        initialChildSize: 0.9,
+        minChildSize: 0.3,
+        maxChildSize: 0.95,
+        builder: (_, controller) {
+          return Container(
+            decoration: BoxDecoration(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
               ),
-              height: screenHeight * 0.80,
-              margin: const EdgeInsets.all(0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Center(child: CupertinoSlideUpBar()),
-                  const CupertinoSlideUpTitle(title: "Forex Terms"),
-                  Expanded(
-                    child: ListView(
-                      controller: controller,
-                      shrinkWrap: true,
-                      children: [
-                        const Padding(
-                          padding:
-                              EdgeInsets.only(left: 25, top: 20, right: 20),
-                          child: Text("Account Size",
-                              style: TextStyle(
-                                  color: kBlack, fontWeight: FontWeight.w500)),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 25, top: 3, right: 20),
-                          child: Text("The amount of money in your account.",
-                              style: TextStyle(color: kBlack)),
-                        ),
-                        const Padding(
-                          padding:
-                              EdgeInsets.only(left: 25, top: 20, right: 20),
-                          child: Text("Investment Amount",
-                              style: TextStyle(
-                                  color: kBlack, fontWeight: FontWeight.w500)),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 25, top: 3, right: 20),
-                          child: Text(
-                              "The amount of money you're going to invest.",
-                              style: TextStyle(color: kBlack)),
-                        ),
-                        const Padding(
-                          padding:
-                              EdgeInsets.only(left: 25, top: 20, right: 20),
-                          child: Text("Risk Percent",
-                              style: TextStyle(
-                                  color: kBlack, fontWeight: FontWeight.w500)),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 25, top: 3, right: 20),
-                          child: Text(
-                              "A percent that you are comfortable with risking.",
-                              style: TextStyle(color: kBlack)),
-                        ),
-                        const Padding(
-                          padding:
-                              EdgeInsets.only(left: 25, top: 20, right: 20),
-                          child: Text("Entry Price",
-                              style: TextStyle(
-                                  color: kBlack, fontWeight: FontWeight.w500)),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 25, top: 3, right: 20),
-                          child: Text(
-                              "Price of a currency pair that you want to get involved at. Rounded up to the nearest 4th decimal point, ex: 1.2400",
-                              style: TextStyle(color: kBlack)),
-                        ),
-                        const Padding(
-                          padding:
-                              EdgeInsets.only(left: 25, top: 20, right: 20),
-                          child: Text("Target Price",
-                              style: TextStyle(
-                                  color: kBlack, fontWeight: FontWeight.w500)),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 25, top: 3, right: 20),
-                          child: Text(
-                              "Price of the currency pair where you would like to close your position and take the profit. Rounded up to the nearest 4th decimal point, ex: 1.2650",
-                              style: TextStyle(color: kBlack)),
-                        ),
-                        const Padding(
-                          padding:
-                              EdgeInsets.only(left: 25, top: 20, right: 20),
-                          child: Text("Protective Stop",
-                              style: TextStyle(
-                                  color: kBlack, fontWeight: FontWeight.w500)),
-                        ),
-                        const Padding(
-                          padding: EdgeInsets.only(left: 25, top: 3, right: 20),
-                          child: Text(
-                              "If the currency pair was to go beyond this price then your position would be considered closed and you would bear the loss. Rounded up to the nearest 4th decimal point, ex: 0.9850",
-                              style: TextStyle(color: kBlack)),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                              left: 20, top: 30, right: 20),
-                          child: CupertinoButton(
-                            padding: const EdgeInsets.all(10),
-                            borderRadius: BorderRadius.circular(12),
-                            pressedOpacity: 0.8,
-                            child: const Text(
-                              "Understood",
-                              style: TextStyle(
-                                color: kThemeRed,
-                                fontWeight: FontWeight.w600,
-                              ),
+              color: kBackgroundColor,
+            ),
+            height: screenHeight * 0.80,
+            margin: const EdgeInsets.all(0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Center(child: CupertinoSlideUpBar()),
+                const CupertinoSlideUpTitle(title: "Forex Terms"),
+                Expanded(
+                  child: ListView(
+                    controller: controller,
+                    shrinkWrap: true,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(left: 25, top: 20, right: 20),
+                        child: Text("Account Size",
+                            style: TextStyle(
+                                color: kBlack, fontWeight: FontWeight.w500)),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 25, top: 3, right: 20),
+                        child: Text("The amount of money in your account.",
+                            style: TextStyle(color: kBlack)),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 25, top: 20, right: 20),
+                        child: Text("Investment Amount",
+                            style: TextStyle(
+                                color: kBlack, fontWeight: FontWeight.w500)),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 25, top: 3, right: 20),
+                        child: Text(
+                            "The amount of money you're going to invest.",
+                            style: TextStyle(color: kBlack)),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 25, top: 20, right: 20),
+                        child: Text("Risk Percent",
+                            style: TextStyle(
+                                color: kBlack, fontWeight: FontWeight.w500)),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 25, top: 3, right: 20),
+                        child: Text(
+                            "A percent that you are comfortable with risking.",
+                            style: TextStyle(color: kBlack)),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 25, top: 20, right: 20),
+                        child: Text("Entry Price",
+                            style: TextStyle(
+                                color: kBlack, fontWeight: FontWeight.w500)),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 25, top: 3, right: 20),
+                        child: Text(
+                            "Price of a currency pair that you want to get involved at. Rounded up to the nearest 4th decimal point, ex: 1.2400",
+                            style: TextStyle(color: kBlack)),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 25, top: 20, right: 20),
+                        child: Text("Target Price",
+                            style: TextStyle(
+                                color: kBlack, fontWeight: FontWeight.w500)),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 25, top: 3, right: 20),
+                        child: Text(
+                            "Price of the currency pair where you would like to close your position and take the profit. Rounded up to the nearest 4th decimal point, ex: 1.2650",
+                            style: TextStyle(color: kBlack)),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 25, top: 20, right: 20),
+                        child: Text("Protective Stop",
+                            style: TextStyle(
+                                color: kBlack, fontWeight: FontWeight.w500)),
+                      ),
+                      const Padding(
+                        padding: EdgeInsets.only(left: 25, top: 3, right: 20),
+                        child: Text(
+                            "If the currency pair was to go beyond this price then your position would be considered closed and you would bear the loss. Rounded up to the nearest 4th decimal point, ex: 0.9850",
+                            style: TextStyle(color: kBlack)),
+                      ),
+                      Padding(
+                        padding:
+                            const EdgeInsets.only(left: 20, top: 30, right: 20),
+                        child: CupertinoButton(
+                          padding: const EdgeInsets.all(10),
+                          borderRadius: BorderRadius.circular(12),
+                          pressedOpacity: 0.8,
+                          child: const Text(
+                            "Understood",
+                            style: TextStyle(
+                              color: kThemeRed,
+                              fontWeight: FontWeight.w600,
                             ),
-                            color: kBlack.withOpacity(0.08),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
                           ),
+                          color: kBlack.withOpacity(0.08),
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
                         ),
-                        // Padding(
-                        //     padding: const EdgeInsets.only(
-                        //         left: 20, top: 8, right: 20, bottom: 25),
-                        //     child: CupertinoButton(
-                        //       padding: const EdgeInsets.all(10),
-                        //       borderRadius: BorderRadius.circular(16),
-                        //       pressedOpacity: 0.8,
-                        //       child: const Text(
-                        //         "More Info",
-                        //         style: TextStyle(
-                        //             color: kLightIndigo, fontWeight: FontWeight.w600),
-                        //       ),
-                        //       color: kBlack.withOpacity(0.08),
-                        //       onPressed: () => _launchURL(),
-                        //     )),
-                      ],
-                    ),
+                      ),
+                      // Padding(
+                      //     padding: const EdgeInsets.only(
+                      //         left: 20, top: 8, right: 20, bottom: 25),
+                      //     child: CupertinoButton(
+                      //       padding: const EdgeInsets.all(10),
+                      //       borderRadius: BorderRadius.circular(16),
+                      //       pressedOpacity: 0.8,
+                      //       child: const Text(
+                      //         "More Info",
+                      //         style: TextStyle(
+                      //             color: kLightIndigo, fontWeight: FontWeight.w600),
+                      //       ),
+                      //       color: kBlack.withOpacity(0.08),
+                      //       onPressed: () => _launchURL(),
+                      //     )),
+                    ],
                   ),
-                ],
-              ),
-            );
-          }),
+                ),
+              ],
+            ),
+          );
+        },
+      ),
     );
   }
 }
