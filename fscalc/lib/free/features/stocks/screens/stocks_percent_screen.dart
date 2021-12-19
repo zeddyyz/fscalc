@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:fscalc/free/components/custom_button.dart';
 import 'package:fscalc/free/components/custom_textfield.dart';
 import 'package:fscalc/free/utilities/constants.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class StocksPercentScreen extends StatefulWidget {
   const StocksPercentScreen({Key? key}) : super(key: key);
@@ -12,6 +13,8 @@ class StocksPercentScreen extends StatefulWidget {
 }
 
 class _StocksPercentScreenState extends State<StocksPercentScreen> {
+  late SharedPreferences _sharedPreferences;
+
   final TextEditingController _accountSizeController = TextEditingController();
   final TextEditingController _percentRiskController = TextEditingController();
   final TextEditingController _entryPriceController = TextEditingController();
@@ -34,9 +37,14 @@ class _StocksPercentScreenState extends State<StocksPercentScreen> {
     _stopLossController.clear();
   }
 
+  Future<void> _sharedPreferencesInitialization() async {
+    _sharedPreferences = await SharedPreferences.getInstance();
+  }
+
   @override
   void initState() {
     super.initState();
+    _sharedPreferencesInitialization();
   }
 
   @override
@@ -52,6 +60,8 @@ class _StocksPercentScreenState extends State<StocksPercentScreen> {
   bool nullValues = true;
 
   void calculatePercentValues() {
+    String _currencySymbol = _sharedPreferences.getString("currency_symbol")!;
+
     if (!mounted) return;
     setState(() {
       if (accountSize == null) {
@@ -77,7 +87,8 @@ class _StocksPercentScreenState extends State<StocksPercentScreen> {
       } else {
         nullValues = false;
         double dollarRisk = accountSize! * (percentRisk! / 100);
-        riskAmountText = "Investment: \$" + dollarRisk.toStringAsFixed(2);
+        riskAmountText =
+            "Investment: " + _currencySymbol + dollarRisk.toStringAsFixed(2);
 
         double sharesAmount = dollarRisk / entryPrice!;
 
@@ -90,8 +101,9 @@ class _StocksPercentScreenState extends State<StocksPercentScreen> {
               "Max Shares: " + sharesAmount.floor().toStringAsFixed(0);
 
           double potentialReturn = (targetPrice! - entryPrice!) * sharesAmount;
-          returnText =
-              "Potential Return: \$" + potentialReturn.toStringAsFixed(2);
+          returnText = "Potential Return: " +
+              _currencySymbol +
+              potentialReturn.toStringAsFixed(2);
         }
       }
     });

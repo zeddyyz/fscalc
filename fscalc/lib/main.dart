@@ -47,13 +47,18 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> _sharedPreferencesInitialization() async {
     _sharedPreferences = await SharedPreferences.getInstance();
-    await _sharedPreferences.reload();
   }
 
   Future<void> _sharedPreferencesChart() async {
-    setState(() {
-      url = _sharedPreferences.getString("chart_preference")!;
-    });
+    if (_sharedPreferences.getString("chart_preference") == null) {
+      setState(() {
+        url = "https://www.tradingview.com/";
+      });
+    } else {
+      setState(() {
+        url = _sharedPreferences.getString("chart_preference")!;
+      });
+    }
   }
 
   @override
@@ -64,7 +69,7 @@ class _MyAppState extends State<MyApp> {
             ),
         builder: (context, snapshot) {
           return MaterialApp(
-            title: 'Fscalc',
+            title: 'fscalc',
             debugShowCheckedModeBanner: false,
             theme: ThemeData(
               appBarTheme: const AppBarTheme(

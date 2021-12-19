@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class CustomProvider with ChangeNotifier {
+class CustomProvider extends ChangeNotifier {
   String? url = "";
 
   void changeURL(String incomingURL) {
