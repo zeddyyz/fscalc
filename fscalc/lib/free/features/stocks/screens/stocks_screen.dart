@@ -30,7 +30,7 @@ class _StocksScreenState extends State<StocksScreen>
     _tabController = TabController(initialIndex: 0, length: 2, vsync: this);
 
     _bannerAd = BannerAd(
-      adUnitId: AdsModel.bannerTestUnitId,
+      adUnitId: AdsModel.bannerUnitId,
       request: const AdRequest(),
       size: AdSize.banner,
       listener: BannerAdListener(
@@ -41,7 +41,7 @@ class _StocksScreenState extends State<StocksScreen>
           });
         },
         onAdFailedToLoad: (ad, err) {
-          print('Failed to load a banner ad: ${err.message}');
+          // print('Failed to load a banner ad: ${err.message}');
           _isBannerAdReady = false;
           ad.dispose();
         },
