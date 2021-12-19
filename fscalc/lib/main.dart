@@ -5,12 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fscalc/free/components/bottom_nav.dart';
 import 'package:fscalc/free/controller/custom_provider.dart';
+import 'package:fscalc/free/controller/notification_service.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+  NotificationService().init();
 
   if (Platform.isIOS) {
     final status = await AppTrackingTransparency.requestTrackingAuthorization();
@@ -35,6 +37,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   late SharedPreferences _sharedPreferences;
+  final NotificationService _notificationService = NotificationService();
   String url = "";
 
   @override
@@ -43,6 +46,8 @@ class _MyAppState extends State<MyApp> {
     _sharedPreferencesInitialization().then((value) => {
           _sharedPreferencesChart(),
         });
+
+    _notificationSetup();
   }
 
   Future<void> _sharedPreferencesInitialization() async {
@@ -59,6 +64,14 @@ class _MyAppState extends State<MyApp> {
         url = _sharedPreferences.getString("chart_preference")!;
       });
     }
+  }
+
+  Future<void> _notificationSetup() async {
+    await _notificationService.scheduleNotifications(
+      "Just checking in",
+      "Money management is essential in being successful in the financial markets",
+      const Duration(days: 7),
+    );
   }
 
   @override

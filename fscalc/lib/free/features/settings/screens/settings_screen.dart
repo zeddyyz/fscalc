@@ -1,12 +1,10 @@
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:fscalc/free/components/bottom_nav.dart';
 import 'package:fscalc/free/components/custom_button.dart';
 import 'package:fscalc/free/components/custom_outline_button.dart';
 import 'package:fscalc/free/controller/custom_provider.dart';
 import 'package:fscalc/free/utilities/constants.dart';
-import 'package:fscalc/main.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -169,7 +167,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 child: Padding(
                   padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   child: Text(
-                    "Settings",
+                    "Preferences",
                     style: TextStyle(
                       color: kWhite,
                       fontSize: 28,
