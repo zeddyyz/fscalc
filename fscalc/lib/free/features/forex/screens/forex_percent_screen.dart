@@ -60,7 +60,12 @@ class _ForexPercentScreenState extends State<ForexPercentScreen> {
   bool nullValues = true;
 
   void calculatePercentValues() {
-    String _currencySymbol = _sharedPreferences.getString("currency_symbol")!;
+    String? _currencySymbol = _sharedPreferences.getString("currency_symbol");
+    if (_currencySymbol == "") {
+      setState(() {
+        _currencySymbol = "\$";
+      });
+    }
 
     if (!mounted) return;
     setState(() {
@@ -88,7 +93,7 @@ class _ForexPercentScreenState extends State<ForexPercentScreen> {
         nullValues = false;
         double dollarRisk = accountSize! * (percentRisk! / 100);
         riskAmountText =
-            "Investment: " + _currencySymbol + dollarRisk.toStringAsFixed(2);
+            "Investment: " + _currencySymbol! + dollarRisk.toStringAsFixed(2);
 
         if (entryPrice! > targetPrice!) {
           // Short trade
@@ -113,7 +118,7 @@ class _ForexPercentScreenState extends State<ForexPercentScreen> {
               (targetPrice! * 10000) - (entryPrice! * 10000);
           String resultText =
               (returnCalculation * (lots * 10)).toStringAsFixed(2);
-          returnText = "Potential Return: " + _currencySymbol + resultText;
+          returnText = "Potential Return: " + _currencySymbol! + resultText;
         }
       }
     });

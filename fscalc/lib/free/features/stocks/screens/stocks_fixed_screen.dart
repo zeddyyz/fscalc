@@ -54,7 +54,12 @@ class _StocksFixedScreenState extends State<StocksFixedScreen> {
   bool nullValues = true;
 
   void calculatePercentValues() {
-    String _currencySymbol = _sharedPreferences.getString("currency_symbol")!;
+    String? _currencySymbol = _sharedPreferences.getString("currency_symbol");
+    if (_currencySymbol == "") {
+      setState(() {
+        _currencySymbol = "\$";
+      });
+    }
 
     if (!mounted) return;
     setState(() {
@@ -86,7 +91,7 @@ class _StocksFixedScreenState extends State<StocksFixedScreen> {
               "Max Shares: " + sharesAmount.floor().toStringAsFixed(0);
 
           returnText = "Potential Return: " +
-              _currencySymbol +
+              _currencySymbol! +
               potentialReturn.toStringAsFixed(2);
         }
       }

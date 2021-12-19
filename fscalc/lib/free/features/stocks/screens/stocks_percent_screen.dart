@@ -60,7 +60,12 @@ class _StocksPercentScreenState extends State<StocksPercentScreen> {
   bool nullValues = true;
 
   void calculatePercentValues() {
-    String _currencySymbol = _sharedPreferences.getString("currency_symbol")!;
+    String? _currencySymbol = _sharedPreferences.getString("currency_symbol");
+    if (_currencySymbol == "") {
+      setState(() {
+        _currencySymbol = "\$";
+      });
+    }
 
     if (!mounted) return;
     setState(() {
@@ -88,7 +93,7 @@ class _StocksPercentScreenState extends State<StocksPercentScreen> {
         nullValues = false;
         double dollarRisk = accountSize! * (percentRisk! / 100);
         riskAmountText =
-            "Investment: " + _currencySymbol + dollarRisk.toStringAsFixed(2);
+            "Investment: " + _currencySymbol! + dollarRisk.toStringAsFixed(2);
 
         double sharesAmount = dollarRisk / entryPrice!;
 
@@ -102,7 +107,7 @@ class _StocksPercentScreenState extends State<StocksPercentScreen> {
 
           double potentialReturn = (targetPrice! - entryPrice!) * sharesAmount;
           returnText = "Potential Return: " +
-              _currencySymbol +
+              _currencySymbol! +
               potentialReturn.toStringAsFixed(2);
         }
       }
