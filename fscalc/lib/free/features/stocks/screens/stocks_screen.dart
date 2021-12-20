@@ -32,7 +32,7 @@ class _StocksScreenState extends State<StocksScreen>
     _bannerAd = BannerAd(
       adUnitId: AdsModel.bannerUnitId,
       request: const AdRequest(),
-      size: AdSize.banner,
+      size: isMobile ? AdSize.banner : AdSize.largeBanner,
       listener: BannerAdListener(
         onAdLoaded: (_) {
           if (!mounted) return;
@@ -168,7 +168,7 @@ class _StocksScreenState extends State<StocksScreen>
               ),
             ),
             _isBannerAdReady ? const SizedBox(height: 20) : Container(),
-            if (!_isBannerAdReady)
+            if (_isBannerAdReady)
               Align(
                 alignment: Alignment.topCenter,
                 child: SizedBox(

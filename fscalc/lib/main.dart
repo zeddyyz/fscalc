@@ -4,6 +4,7 @@ import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fscalc/free/components/bottom_nav.dart';
+import 'package:fscalc/free/components/onboarding_screen.dart';
 import 'package:fscalc/free/controller/custom_provider.dart';
 import 'package:fscalc/free/controller/notification_service.dart';
 import 'package:provider/provider.dart';
@@ -92,7 +93,7 @@ class _MyAppState extends State<MyApp> {
               highlightColor: Colors.transparent,
             ),
             home: GestureDetector(
-              child: const BottomNav(),
+              child: const OnboardingScreen(),
               onTap: () {
                 FocusScopeNode currentFocus = FocusScope.of(context);
                 if (!currentFocus.hasPrimaryFocus &&

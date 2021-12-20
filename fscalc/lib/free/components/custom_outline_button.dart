@@ -9,6 +9,7 @@ class CustomOutlineButton extends StatelessWidget {
     required this.title,
     required this.titleColor,
     required this.titleFontWeight,
+    this.titleFontSize,
     required this.onTap,
   }) : super(key: key);
 
@@ -18,6 +19,7 @@ class CustomOutlineButton extends StatelessWidget {
   final String title;
   final Color titleColor;
   final FontWeight titleFontWeight;
+  final double? titleFontSize;
   final Function() onTap;
 
   @override
@@ -43,6 +45,7 @@ class CustomOutlineButton extends StatelessWidget {
             style: TextStyle(
               color: titleColor,
               fontWeight: titleFontWeight,
+              fontSize: titleFontSize ?? 16,
             ),
           ),
         ),

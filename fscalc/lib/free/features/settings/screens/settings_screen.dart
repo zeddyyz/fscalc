@@ -4,8 +4,10 @@ import 'package:flutter/widgets.dart';
 import 'package:fscalc/free/components/custom_button.dart';
 import 'package:fscalc/free/components/custom_outline_button.dart';
 import 'package:fscalc/free/controller/custom_provider.dart';
+import 'package:fscalc/free/models/ads_model.dart';
 import 'package:fscalc/free/utilities/constants.dart';
 import 'package:fscalc/free/utilities/responsive_layout.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -21,6 +23,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   int _currentChartIndex = 0;
   int _currentCurrencyIndex = 0;
 
+  late BannerAd _bannerAd;
+  bool _isBannerAdReady = false;
+
   @override
   void initState() {
     super.initState();
@@ -28,6 +33,27 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _assignCurrencyIndex(),
           _assignChartIndex(),
         });
+
+    _bannerAd = BannerAd(
+      adUnitId: AdsModel.bannerUnitId,
+      request: const AdRequest(),
+      size: isMobile ? AdSize.banner : AdSize.largeBanner,
+      listener: BannerAdListener(
+        onAdLoaded: (_) {
+          if (!mounted) return;
+          setState(() {
+            _isBannerAdReady = true;
+          });
+        },
+        onAdFailedToLoad: (ad, err) {
+          // print('Failed to load a banner ad: ${err.message}');
+          _isBannerAdReady = false;
+          ad.dispose();
+        },
+      ),
+    );
+
+    _bannerAd.load();
   }
 
   Future<void> _sharedPreferencesInitialization() async {
@@ -36,7 +62,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // #region Currency options
   Future<void> _assignCurrencyIndex() async {
-    String _value = _sharedPreferences.getString("currency_name")!;
+    String? _value = _sharedPreferences.getString("currency_name");
+
+    if (_value == null) {
+      setState(() {
+        _value = "Dollar";
+      });
+    }
 
     switch (_value) {
       case "Dollar":
@@ -69,7 +101,13 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // #region Chart options
   Future<void> _assignChartIndex() async {
-    String _value = _sharedPreferences.getString("chart_preference")!;
+    String? _value = _sharedPreferences.getString("chart_preference");
+
+    if (_value == null) {
+      setState(() {
+        _value = "https://www.tradingview.com/";
+      });
+    }
 
     switch (_value) {
       case "https://www.tradingview.com/":
@@ -224,6 +262,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           titleFontWeight: _currentCurrencyIndex == index
                               ? FontWeight.w600
                               : FontWeight.normal,
+                          titleFontSize: 18,
                           onTap: () async {
                             setState(() {
                               _currentCurrencyIndex = index;
@@ -319,10 +358,22 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
               ),
+              _isBannerAdReady
+                  ? SizedBox(height: screenHeight * 0.1)
+                  : const SizedBox(),
+              if (_isBannerAdReady)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    width: _bannerAd.size.width.toDouble(),
+                    height: _bannerAd.size.height.toDouble(),
+                    child: AdWidget(ad: _bannerAd),
+                  ),
+                ),
+              const SizedBox(height: 36),
             ],
           ),
-          isTablet: Wrap(
-            spacing: 50,
+          isTablet: Column(
             children: [
               Container(
                 height: 140,
@@ -351,7 +402,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 60),
               // * Currency Preference
               Container(
-                width: screenWidth,
+                width: screenWidth * 0.9,
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
@@ -365,7 +416,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       "Currency Preference",
                       style: TextStyle(
                         color: kBlack,
-                        fontSize: 18,
+                        fontSize: 22,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
@@ -396,6 +447,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                             titleFontWeight: _currentCurrencyIndex == index
                                 ? FontWeight.w600
                                 : FontWeight.normal,
+                            titleFontSize: 22,
                             onTap: () async {
                               setState(() {
                                 _currentCurrencyIndex = index;
@@ -416,7 +468,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               const SizedBox(height: 24),
               // * Detailed Information
               Container(
-                width: screenWidth,
+                width: screenWidth * 0.9,
                 margin: const EdgeInsets.symmetric(horizontal: 16),
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: BoxDecoration(
@@ -432,7 +484,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                           "Detailed Information",
                           style: TextStyle(
                             color: kBlack,
-                            fontSize: 18,
+                            fontSize: 22,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -477,6 +529,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 titleFontWeight: _currentChartIndex == index
                                     ? FontWeight.w600
                                     : FontWeight.normal,
+                                titleFontSize: 22,
                                 onTap: () async {
                                   setState(() {
                                     _currentChartIndex = index;
@@ -496,6 +549,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   ),
                 ),
               ),
+              _isBannerAdReady
+                  ? SizedBox(height: screenHeight * 0.1)
+                  : const SizedBox(),
+              if (_isBannerAdReady)
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: SizedBox(
+                    width: _bannerAd.size.width.toDouble(),
+                    height: _bannerAd.size.height.toDouble(),
+                    child: AdWidget(ad: _bannerAd),
+                  ),
+                ),
+              const SizedBox(height: 36),
             ],
           ),
         ),

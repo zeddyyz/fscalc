@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:fscalc/free/components/cupertino_slideup_bar.dart';
 import 'package:fscalc/free/components/cupertino_slideup_text.dart';
-import 'package:fscalc/free/controller/notification_service.dart';
 import 'package:fscalc/free/features/forex/screens/forex_percent_screen.dart';
 import 'package:fscalc/free/models/ads_model.dart';
 import 'package:fscalc/free/utilities/constants.dart';
@@ -32,7 +31,7 @@ class _ForexScreenState extends State<ForexScreen>
     _bannerAd = BannerAd(
       adUnitId: AdsModel.bannerUnitId,
       request: const AdRequest(),
-      size: AdSize.banner,
+      size: isMobile ? AdSize.banner : AdSize.largeBanner,
       listener: BannerAdListener(
         onAdLoaded: (_) {
           if (!mounted) return;

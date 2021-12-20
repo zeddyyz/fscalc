@@ -16,7 +16,11 @@ class LoadingScreen extends StatelessWidget {
     if (loading) {
       return const Loading();
     } else {
-      return child;
+      return AnimatedOpacity(
+        opacity: !loading ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 5000),
+        child: child,
+      );
     }
   }
 }
