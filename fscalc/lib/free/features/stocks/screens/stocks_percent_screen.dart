@@ -164,6 +164,7 @@ class _StocksPercentScreenState extends State<StocksPercentScreen> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        kIsMobile ? const SizedBox() : const SizedBox(height: 20),
         CustomTextField(
           controller: _accountSizeController,
           hintText: "Account Size",

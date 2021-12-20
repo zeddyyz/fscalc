@@ -2,6 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
 
+var kIsMobile = Device.get().isPhone;
+var kIsTablet = Device.get().isTablet;
+
 const kThemeRed = Color.fromRGBO(182, 17, 49, 1);
 
 var kBackgroundColor = Colors.grey.shade100;

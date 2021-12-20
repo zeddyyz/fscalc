@@ -158,14 +158,17 @@ class _StocksScreenState extends State<StocksScreen>
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
-              child: _body == 0
-                  ? const StocksPercentScreen()
-                  : const StocksFixedScreen(),
+            Center(
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 28),
+                child: _body == 0
+                    ? const StocksPercentScreen()
+                    : const StocksFixedScreen(),
+              ),
             ),
             _isBannerAdReady ? const SizedBox(height: 20) : Container(),
-            if (_isBannerAdReady)
+            if (!_isBannerAdReady)
               Align(
                 alignment: Alignment.topCenter,
                 child: SizedBox(

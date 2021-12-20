@@ -137,9 +137,11 @@ class _ForexScreenState extends State<ForexScreen>
                 ),
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(horizontal: 16, vertical: 28),
-              child: ForexPercentScreen(),
+            const Center(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 28),
+                child: ForexPercentScreen(),
+              ),
             ),
             _isBannerAdReady ? const SizedBox(height: 20) : Container(),
             if (_isBannerAdReady)

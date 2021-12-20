@@ -5,6 +5,7 @@ import 'package:fscalc/free/components/custom_button.dart';
 import 'package:fscalc/free/components/custom_outline_button.dart';
 import 'package:fscalc/free/controller/custom_provider.dart';
 import 'package:fscalc/free/utilities/constants.dart';
+import 'package:fscalc/free/utilities/responsive_layout.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -145,191 +146,358 @@ class _SettingsScreenState extends State<SettingsScreen> {
     return Scaffold(
       backgroundColor: kBackgroundColor,
       body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              // height: 140,
-              height: 160,
-              width: screenWidth,
-              decoration: BoxDecoration(
-                color: kThemeRed,
-                // borderRadius: BorderRadius.only(
-                //   bottomLeft: Radius.circular(20),
-                //   bottomRight: Radius.circular(20),
-                // ),
-                borderRadius: BorderRadius.vertical(
-                  bottom: Radius.elliptical(screenWidth, 40),
-                ),
-              ),
-              child: const SafeArea(
-                bottom: false,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                  child: Text(
-                    "Preferences",
-                    style: TextStyle(
-                      color: kWhite,
-                      fontSize: 28,
-                      fontWeight: FontWeight.w600,
-                    ),
+        child: ResponsiveLayout(
+          isMobile: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                // height: 140,
+                height: 160,
+                width: screenWidth,
+                decoration: BoxDecoration(
+                  color: kThemeRed,
+                  // borderRadius: BorderRadius.only(
+                  //   bottomLeft: Radius.circular(20),
+                  //   bottomRight: Radius.circular(20),
+                  // ),
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.elliptical(screenWidth, 40),
                   ),
                 ),
-              ),
-            ),
-            const SizedBox(height: 50),
-            // Container(
-            //   height: 50,
-            //   width: screenWidth,
-            //   margin: const EdgeInsets.symmetric(horizontal: 16),
-            //   padding: const EdgeInsets.symmetric(horizontal: 16),
-            //   alignment: Alignment.centerLeft,
-            //   decoration: BoxDecoration(
-            //     color: kWhite,
-            //     borderRadius: BorderRadius.circular(12),
-            //   ),
-            //   child: Text("Dark Mode?"),
-            // ),
-            // const SizedBox(height: 20),
-            // * Currency Preference
-            Container(
-              width: screenWidth,
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: kWhite,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: ExpandablePanel(
-                header: const Padding(
-                  padding: EdgeInsets.only(left: 4, top: 12, bottom: 12),
-                  child: Text(
-                    "Currency Preference",
-                    style: TextStyle(
-                      color: kBlack,
-                      fontSize: 18,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                collapsed: const SizedBox(),
-                expanded: ListView.builder(
-                  itemCount: _availableOptionCurrency.length,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemBuilder: (context, index) {
-                    var _list = _availableOptionCurrency.entries.toList();
-                    return Container(
-                      margin: const EdgeInsets.only(bottom: 12),
-                      child: CustomOutlineButton(
-                        backgroundColor: _currentCurrencyIndex == index
-                            ? kWhite
-                            : kBackgroundColor,
-                        outlineBorderColor: _currentCurrencyIndex == index
-                            ? kThemeRed
-                            : kBackgroundColor,
-                        title: _list[index].value,
-                        titleColor:
-                            _currentCurrencyIndex == index ? kThemeRed : kBlack,
-                        titleFontWeight: _currentCurrencyIndex == index
-                            ? FontWeight.w600
-                            : FontWeight.normal,
-                        onTap: () async {
-                          setState(() {
-                            _currentCurrencyIndex = index;
-                          });
-
-                          await _sharedPreferences.setString(
-                              "currency_name", _list[index].key);
-                          await _sharedPreferences.setString(
-                              "currency_symbol", _list[index].value);
-                        },
+                child: const SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    child: Text(
+                      "Preferences",
+                      style: TextStyle(
+                        color: kWhite,
+                        fontSize: 28,
+                        fontWeight: FontWeight.w600,
                       ),
-                    );
-                  },
+                    ),
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 20),
-            // * Detailed Information
-            Container(
-              width: screenWidth,
-              margin: const EdgeInsets.symmetric(horizontal: 16),
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              decoration: BoxDecoration(
-                color: kWhite,
-                borderRadius: BorderRadius.circular(12),
+              const SizedBox(height: 50),
+              // * Currency Preference
+              Container(
+                width: screenWidth,
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: kWhite,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ExpandablePanel(
+                  header: const Padding(
+                    padding: EdgeInsets.only(left: 4, top: 12, bottom: 12),
+                    child: Text(
+                      "Currency Preference",
+                      style: TextStyle(
+                        color: kBlack,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  collapsed: const SizedBox(),
+                  expanded: ListView.builder(
+                    itemCount: _availableOptionCurrency.length,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemBuilder: (context, index) {
+                      var _list = _availableOptionCurrency.entries.toList();
+                      return Container(
+                        margin: const EdgeInsets.only(bottom: 12),
+                        child: CustomOutlineButton(
+                          backgroundColor: _currentCurrencyIndex == index
+                              ? kWhite
+                              : kBackgroundColor,
+                          outlineBorderColor: _currentCurrencyIndex == index
+                              ? kThemeRed
+                              : kBackgroundColor,
+                          title: _list[index].value,
+                          titleColor: _currentCurrencyIndex == index
+                              ? kThemeRed
+                              : kBlack,
+                          titleFontWeight: _currentCurrencyIndex == index
+                              ? FontWeight.w600
+                              : FontWeight.normal,
+                          onTap: () async {
+                            setState(() {
+                              _currentCurrencyIndex = index;
+                            });
+
+                            await _sharedPreferences.setString(
+                                "currency_name", _list[index].key);
+                            await _sharedPreferences.setString(
+                                "currency_symbol", _list[index].value);
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ),
               ),
-              child: ExpandablePanel(
-                header: Row(
-                  children: [
-                    const Padding(
-                      padding: EdgeInsets.only(left: 4, top: 12, bottom: 12),
-                      child: Text(
-                        "Detailed Information",
-                        style: TextStyle(
-                          color: kBlack,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
+              const SizedBox(height: 20),
+              // * Detailed Information
+              Container(
+                width: screenWidth,
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: kWhite,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ExpandablePanel(
+                  header: Row(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(left: 4, top: 12, bottom: 12),
+                        child: Text(
+                          "Detailed Information",
+                          style: TextStyle(
+                            color: kBlack,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
                         ),
                       ),
-                    ),
-                    IconButton(
-                      onPressed: () => _showAlertDialog(),
-                      icon: Icon(
-                        Icons.info_outline_rounded,
-                        color: kThemeRed.withOpacity(0.8),
+                      IconButton(
+                        onPressed: () => _showAlertDialog(),
+                        icon: Icon(
+                          Icons.info_outline_rounded,
+                          color: kThemeRed.withOpacity(0.8),
+                        ),
+                      ),
+                    ],
+                  ),
+                  collapsed: const Padding(
+                    padding: EdgeInsets.only(bottom: 12, left: 4),
+                    child: Text("View different resources."),
+                  ),
+                  expanded: Consumer<CustomProvider>(
+                    builder: (context, value, _) {
+                      return ListView.builder(
+                        itemCount: _availableOptionChart.length,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemBuilder: (context, index) {
+                          var _list = _availableOptionChart.entries.toList();
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: CustomOutlineButton(
+                              backgroundColor: _currentChartIndex == index
+                                  ? kWhite
+                                  : kBackgroundColor,
+                              outlineBorderColor: _currentChartIndex == index
+                                  ? kThemeRed
+                                  : kBackgroundColor,
+                              title: _list[index].key,
+                              titleColor: _currentChartIndex == index
+                                  ? kThemeRed
+                                  : kBlack,
+                              titleFontWeight: _currentChartIndex == index
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                              onTap: () async {
+                                setState(() {
+                                  _currentChartIndex = index;
+                                });
+
+                                await _sharedPreferences.setString(
+                                    "chart_preference", _list[index].value);
+
+                                value.changeURL(_list[index].value);
+                              },
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ],
+          ),
+          isTablet: Wrap(
+            spacing: 50,
+            children: [
+              Container(
+                height: 140,
+                width: screenWidth,
+                decoration: BoxDecoration(
+                  color: kThemeRed,
+                  borderRadius: BorderRadius.vertical(
+                    bottom: Radius.elliptical(screenWidth, 40),
+                  ),
+                ),
+                child: const SafeArea(
+                  bottom: false,
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20, vertical: 24),
+                    child: Text(
+                      "Preferences",
+                      style: TextStyle(
+                        color: kWhite,
+                        fontSize: 32,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ],
+                  ),
                 ),
-                collapsed: const Padding(
-                  padding: EdgeInsets.only(bottom: 12, left: 4),
-                  child: Text("View different resources."),
+              ),
+              const SizedBox(height: 60),
+              // * Currency Preference
+              Container(
+                width: screenWidth,
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: kWhite,
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                expanded: Consumer<CustomProvider>(
-                  builder: (context, value, _) {
-                    return ListView.builder(
-                      itemCount: _availableOptionChart.length,
+                child: ExpandablePanel(
+                  header: const Padding(
+                    padding: EdgeInsets.only(left: 4, top: 16, bottom: 16),
+                    child: Text(
+                      "Currency Preference",
+                      style: TextStyle(
+                        color: kBlack,
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  collapsed: const SizedBox(),
+                  expanded: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: ListView.builder(
+                      itemCount: _availableOptionCurrency.length,
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
-                        var _list = _availableOptionChart.entries.toList();
+                        var _list = _availableOptionCurrency.entries.toList();
                         return Container(
                           margin: const EdgeInsets.only(bottom: 12),
                           child: CustomOutlineButton(
-                            backgroundColor: _currentChartIndex == index
+                            backgroundColor: _currentCurrencyIndex == index
                                 ? kWhite
                                 : kBackgroundColor,
-                            outlineBorderColor: _currentChartIndex == index
+                            outlineBorderColor: _currentCurrencyIndex == index
                                 ? kThemeRed
                                 : kBackgroundColor,
-                            title: _list[index].key,
-                            titleColor: _currentChartIndex == index
+                            title: _list[index].value,
+                            titleColor: _currentCurrencyIndex == index
                                 ? kThemeRed
                                 : kBlack,
-                            titleFontWeight: _currentChartIndex == index
+                            titleFontWeight: _currentCurrencyIndex == index
                                 ? FontWeight.w600
                                 : FontWeight.normal,
                             onTap: () async {
                               setState(() {
-                                _currentChartIndex = index;
+                                _currentCurrencyIndex = index;
                               });
 
                               await _sharedPreferences.setString(
-                                  "chart_preference", _list[index].value);
-
-                              value.changeURL(_list[index].value);
+                                  "currency_name", _list[index].key);
+                              await _sharedPreferences.setString(
+                                  "currency_symbol", _list[index].value);
                             },
                           ),
                         );
                       },
-                    );
-                  },
+                    ),
+                  ),
                 ),
               ),
-            ),
-          ],
+              const SizedBox(height: 24),
+              // * Detailed Information
+              Container(
+                width: screenWidth,
+                margin: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                decoration: BoxDecoration(
+                  color: kWhite,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ExpandablePanel(
+                  header: Row(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(left: 4, top: 16, bottom: 16),
+                        child: Text(
+                          "Detailed Information",
+                          style: TextStyle(
+                            color: kBlack,
+                            fontSize: 18,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        onPressed: () => _showAlertDialog(),
+                        icon: Icon(
+                          Icons.info_outline_rounded,
+                          color: kThemeRed.withOpacity(0.8),
+                        ),
+                      ),
+                    ],
+                  ),
+                  collapsed: const Padding(
+                    padding: EdgeInsets.only(bottom: 12, left: 4),
+                    child: Text("View different resources."),
+                  ),
+                  expanded: Padding(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                    child: Consumer<CustomProvider>(
+                      builder: (context, value, _) {
+                        return ListView.builder(
+                          itemCount: _availableOptionChart.length,
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          itemBuilder: (context, index) {
+                            var _list = _availableOptionChart.entries.toList();
+                            return Container(
+                              margin: const EdgeInsets.only(bottom: 12),
+                              child: CustomOutlineButton(
+                                backgroundColor: _currentChartIndex == index
+                                    ? kWhite
+                                    : kBackgroundColor,
+                                outlineBorderColor: _currentChartIndex == index
+                                    ? kThemeRed
+                                    : kBackgroundColor,
+                                title: _list[index].key,
+                                titleColor: _currentChartIndex == index
+                                    ? kThemeRed
+                                    : kBlack,
+                                titleFontWeight: _currentChartIndex == index
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                                onTap: () async {
+                                  setState(() {
+                                    _currentChartIndex = index;
+                                  });
+
+                                  await _sharedPreferences.setString(
+                                      "chart_preference", _list[index].value);
+
+                                  value.changeURL(_list[index].value);
+                                },
+                              ),
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
