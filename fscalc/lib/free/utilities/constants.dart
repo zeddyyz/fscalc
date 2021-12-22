@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_device_type/flutter_device_type.dart';
+import 'package:get_storage/get_storage.dart';
 
 var kIsMobile = Device.get().isPhone;
 var kIsTablet = Device.get().isTablet;
@@ -36,3 +37,9 @@ const kInputHintStyle =
 var kInputContentPadding = const EdgeInsets.only(top: 20, left: 24);
 
 var kPrefixIconPadding = const EdgeInsets.only(top: 10, left: 10, right: 10);
+
+// get_storage
+final storageBox = GetStorage();
+var defaultCurrencyPreference = "Dollar";
+var defaultCurrencySymbol = "\$";
+var defaultChartPreference = "https://www.tradingview.com/";

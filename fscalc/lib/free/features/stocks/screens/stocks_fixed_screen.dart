@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:fscalc/free/components/custom_button.dart';
 import 'package:fscalc/free/components/custom_textfield.dart';
 import 'package:fscalc/free/utilities/constants.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class StocksFixedScreen extends StatefulWidget {
   const StocksFixedScreen({Key? key}) : super(key: key);
@@ -13,8 +12,6 @@ class StocksFixedScreen extends StatefulWidget {
 }
 
 class _StocksFixedScreenState extends State<StocksFixedScreen> {
-  late SharedPreferences _sharedPreferences;
-
   final TextEditingController _tradeSizeController = TextEditingController();
   final TextEditingController _entryPriceController = TextEditingController();
   final TextEditingController _targetPriceController = TextEditingController();
@@ -31,16 +28,6 @@ class _StocksFixedScreenState extends State<StocksFixedScreen> {
     _targetPriceController.clear();
   }
 
-  Future<void> _sharedPreferencesInitialization() async {
-    _sharedPreferences = await SharedPreferences.getInstance();
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _sharedPreferencesInitialization();
-  }
-
   @override
   void dispose() {
     _disposeControllers();
@@ -54,12 +41,8 @@ class _StocksFixedScreenState extends State<StocksFixedScreen> {
   bool nullValues = true;
 
   void calculatePercentValues() {
-    String? _currencySymbol = _sharedPreferences.getString("currency_symbol");
-    if (_currencySymbol == "") {
-      setState(() {
-        _currencySymbol = "\$";
-      });
-    }
+    var _currencySymbol =
+        storageBox.read("currencySymbol") ?? defaultCurrencySymbol;
 
     if (!mounted) return;
     setState(() {

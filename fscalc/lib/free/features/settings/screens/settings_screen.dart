@@ -9,7 +9,6 @@ import 'package:fscalc/free/utilities/constants.dart';
 import 'package:fscalc/free/utilities/responsive_layout.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({Key? key}) : super(key: key);
@@ -19,7 +18,6 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  late SharedPreferences _sharedPreferences;
   int _currentChartIndex = 0;
   int _currentCurrencyIndex = 0;
 
@@ -29,10 +27,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
   @override
   void initState() {
     super.initState();
-    _sharedPreferencesInitialization().then((value) => {
-          _assignCurrencyIndex(),
-          _assignChartIndex(),
-        });
+
+    _assignCurrencyIndex();
+    _assignChartIndex();
 
     _bannerAd = BannerAd(
       adUnitId: AdsModel.bannerUnitId,
@@ -56,21 +53,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
     _bannerAd.load();
   }
 
-  Future<void> _sharedPreferencesInitialization() async {
-    _sharedPreferences = await SharedPreferences.getInstance();
-  }
-
   // #region Currency options
   Future<void> _assignCurrencyIndex() async {
-    String? _value = _sharedPreferences.getString("currency_name");
+    var currencyPreference =
+        storageBox.read("currencyPreference") ?? defaultCurrencyPreference;
 
-    if (_value == null) {
-      setState(() {
-        _value = "Dollar";
-      });
-    }
-
-    switch (_value) {
+    switch (currencyPreference) {
       case "Dollar":
         setState(() {
           _currentCurrencyIndex = 0;
@@ -101,15 +89,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   // #region Chart options
   Future<void> _assignChartIndex() async {
-    String? _value = _sharedPreferences.getString("chart_preference");
+    var chartPreference =
+        storageBox.read("chartPreference") ?? defaultChartPreference;
 
-    if (_value == null) {
-      setState(() {
-        _value = "https://www.tradingview.com/";
-      });
-    }
-
-    switch (_value) {
+    switch (chartPreference) {
       case "https://www.tradingview.com/":
         setState(() {
           _currentChartIndex = 0;
@@ -125,6 +108,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
           _currentChartIndex = 2;
         });
         break;
+      case "https://www.investing.com/":
+        setState(() {
+          _currentChartIndex = 3;
+        });
+        break;
       default:
         break;
     }
@@ -134,6 +122,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     "Tradingview": "https://www.tradingview.com/",
     "Yahoo Finance": "https://ca.finance.yahoo.com/",
     "Google Finance": "https://www.google.com/finance/",
+    "Investing.com": "https://www.investing.com/",
   };
   // #endregion
 
@@ -268,10 +257,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                               _currentCurrencyIndex = index;
                             });
 
-                            await _sharedPreferences.setString(
-                                "currency_name", _list[index].key);
-                            await _sharedPreferences.setString(
-                                "currency_symbol", _list[index].value);
+                            storageBox.write(
+                                "currencyPreference", _list[index].key);
+                            storageBox.write(
+                                "currencySymbol", _list[index].value);
                           },
                         ),
                       );
@@ -345,10 +334,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                   _currentChartIndex = index;
                                 });
 
-                                await _sharedPreferences.setString(
-                                    "chart_preference", _list[index].value);
-
-                                value.changeURL(_list[index].value);
+                                storageBox.write(
+                                    "chartPreference", _list[index].value);
                               },
                             ),
                           );
@@ -453,10 +440,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                                 _currentCurrencyIndex = index;
                               });
 
-                              await _sharedPreferences.setString(
-                                  "currency_name", _list[index].key);
-                              await _sharedPreferences.setString(
-                                  "currency_symbol", _list[index].value);
+                              storageBox.write(
+                                  "currencyPreference", _list[index].key);
+                              storageBox.write(
+                                  "currencySymbol", _list[index].value);
                             },
                           ),
                         );
@@ -505,44 +492,38 @@ class _SettingsScreenState extends State<SettingsScreen> {
                   expanded: Padding(
                     padding:
                         const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    child: Consumer<CustomProvider>(
-                      builder: (context, value, _) {
-                        return ListView.builder(
-                          itemCount: _availableOptionChart.length,
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            var _list = _availableOptionChart.entries.toList();
-                            return Container(
-                              margin: const EdgeInsets.only(bottom: 12),
-                              child: CustomOutlineButton(
-                                backgroundColor: _currentChartIndex == index
-                                    ? kWhite
-                                    : kBackgroundColor,
-                                outlineBorderColor: _currentChartIndex == index
-                                    ? kThemeRed
-                                    : kBackgroundColor,
-                                title: _list[index].key,
-                                titleColor: _currentChartIndex == index
-                                    ? kThemeRed
-                                    : kBlack,
-                                titleFontWeight: _currentChartIndex == index
-                                    ? FontWeight.w600
-                                    : FontWeight.normal,
-                                titleFontSize: 22,
-                                onTap: () async {
-                                  setState(() {
-                                    _currentChartIndex = index;
-                                  });
+                    child: ListView.builder(
+                      itemCount: _availableOptionChart.length,
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        var _list = _availableOptionChart.entries.toList();
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: CustomOutlineButton(
+                            backgroundColor: _currentChartIndex == index
+                                ? kWhite
+                                : kBackgroundColor,
+                            outlineBorderColor: _currentChartIndex == index
+                                ? kThemeRed
+                                : kBackgroundColor,
+                            title: _list[index].key,
+                            titleColor: _currentChartIndex == index
+                                ? kThemeRed
+                                : kBlack,
+                            titleFontWeight: _currentChartIndex == index
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                            titleFontSize: 22,
+                            onTap: () async {
+                              setState(() {
+                                _currentChartIndex = index;
+                              });
 
-                                  await _sharedPreferences.setString(
-                                      "chart_preference", _list[index].value);
-
-                                  value.changeURL(_list[index].value);
-                                },
-                              ),
-                            );
-                          },
+                              storageBox.write(
+                                  "chartPreference", _list[index].value);
+                            },
+                          ),
                         );
                       },
                     ),
