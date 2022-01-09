@@ -9,7 +9,6 @@ import 'package:fscalc/free/controller/notification_service.dart';
 import 'package:fscalc/free/utilities/constants.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

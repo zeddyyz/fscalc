@@ -1,4 +1,5 @@
 import 'package:expandable/expandable.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:fscalc/free/components/custom_button.dart';
@@ -142,7 +143,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const Padding(
               padding: EdgeInsets.all(16),
               child: Text(
-                "Please restart the app for changes to take effect.",
+                // "Please restart the app for changes to take effect.",
+                "Please click on refresh icon on the previous page to change resource.",
                 style: TextStyle(
                   color: kBlack,
                   fontWeight: FontWeight.w600,
@@ -178,15 +180,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                // height: 140,
                 height: 160,
                 width: screenWidth,
                 decoration: BoxDecoration(
                   color: kThemeRed,
-                  // borderRadius: BorderRadius.only(
-                  //   bottomLeft: Radius.circular(20),
-                  //   bottomRight: Radius.circular(20),
-                  // ),
                   borderRadius: BorderRadius.vertical(
                     bottom: Radius.elliptical(screenWidth, 40),
                   ),
@@ -229,42 +226,46 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     ),
                   ),
                   collapsed: const SizedBox(),
-                  expanded: ListView.builder(
-                    itemCount: _availableOptionCurrency.length,
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemBuilder: (context, index) {
-                      var _list = _availableOptionCurrency.entries.toList();
-                      return Container(
-                        margin: const EdgeInsets.only(bottom: 12),
-                        child: CustomOutlineButton(
-                          backgroundColor: _currentCurrencyIndex == index
-                              ? kWhite
-                              : kBackgroundColor,
-                          outlineBorderColor: _currentCurrencyIndex == index
-                              ? kThemeRed
-                              : kBackgroundColor,
-                          title: _list[index].value,
-                          titleColor: _currentCurrencyIndex == index
-                              ? kThemeRed
-                              : kBlack,
-                          titleFontWeight: _currentCurrencyIndex == index
-                              ? FontWeight.w600
-                              : FontWeight.normal,
-                          titleFontSize: 18,
-                          onTap: () async {
-                            setState(() {
-                              _currentCurrencyIndex = index;
-                            });
+                  expanded: Padding(
+                    padding: const EdgeInsets.only(top: 12),
+                    child: ListView.builder(
+                      itemCount: _availableOptionCurrency.length,
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.all(0),
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemBuilder: (context, index) {
+                        var _list = _availableOptionCurrency.entries.toList();
+                        return Container(
+                          margin: const EdgeInsets.only(bottom: 12),
+                          child: CustomOutlineButton(
+                            backgroundColor: _currentCurrencyIndex == index
+                                ? kWhite
+                                : kBackgroundColor,
+                            outlineBorderColor: _currentCurrencyIndex == index
+                                ? kThemeRed
+                                : kBackgroundColor,
+                            title: _list[index].value,
+                            titleColor: _currentCurrencyIndex == index
+                                ? kThemeRed
+                                : kBlack,
+                            titleFontWeight: _currentCurrencyIndex == index
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                            titleFontSize: 18,
+                            onTap: () async {
+                              setState(() {
+                                _currentCurrencyIndex = index;
+                              });
 
-                            storageBox.write(
-                                "currencyPreference", _list[index].key);
-                            storageBox.write(
-                                "currencySymbol", _list[index].value);
-                          },
-                        ),
-                      );
-                    },
+                              storageBox.write(
+                                  "currencyPreference", _list[index].key);
+                              storageBox.write(
+                                  "currencySymbol", _list[index].value);
+                            },
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
@@ -305,43 +306,86 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     padding: EdgeInsets.only(bottom: 12, left: 4),
                     child: Text("View different resources."),
                   ),
-                  expanded: Consumer<CustomProvider>(
-                    builder: (context, value, _) {
-                      return ListView.builder(
-                        itemCount: _availableOptionChart.length,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemBuilder: (context, index) {
-                          var _list = _availableOptionChart.entries.toList();
-                          return Container(
-                            margin: const EdgeInsets.only(bottom: 12),
-                            child: CustomOutlineButton(
-                              backgroundColor: _currentChartIndex == index
-                                  ? kWhite
-                                  : kBackgroundColor,
-                              outlineBorderColor: _currentChartIndex == index
-                                  ? kThemeRed
-                                  : kBackgroundColor,
-                              title: _list[index].key,
-                              titleColor: _currentChartIndex == index
-                                  ? kThemeRed
-                                  : kBlack,
-                              titleFontWeight: _currentChartIndex == index
-                                  ? FontWeight.w600
-                                  : FontWeight.normal,
-                              onTap: () async {
-                                setState(() {
-                                  _currentChartIndex = index;
-                                });
+                  expanded: Column(
+                    children: [
+                      // Padding(
+                      //   padding: const EdgeInsets.only(
+                      //       top: 4, left: 4, right: 4, bottom: 0),
+                      //   child: Row(
+                      //     children: [
+                      //       const Text(
+                      //         "Show navigation buttons",
+                      //         style: TextStyle(fontSize: 18),
+                      //       ),
+                      //       const Spacer(),
+                      //       CupertinoSwitch(
+                      //         value: _showNavBtn,
+                      //         thumbColor: kThemeRed,
+                      //         trackColor: kBackgroundColor,
+                      //         activeColor: kThemeRed.withOpacity(0.4),
+                      //         onChanged: (value) {
+                      //           if (!mounted) return;
+                      //           if (value) {
+                      //             storageBox.write("displayNavBtn", true);
+                      //             setState(() {
+                      //               _showNavBtn = true;
+                      //             });
+                      //           } else {
+                      //             storageBox.write("displayNavBtn", false);
+                      //             setState(() {
+                      //               _showNavBtn = false;
+                      //             });
+                      //           }
+                      //         },
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 12),
+                        child: Consumer<CustomProvider>(
+                          builder: (context, value, _) {
+                            return ListView.builder(
+                              itemCount: _availableOptionChart.length,
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              padding: const EdgeInsets.all(0),
+                              itemBuilder: (context, index) {
+                                var _list =
+                                    _availableOptionChart.entries.toList();
+                                return Container(
+                                  margin: const EdgeInsets.only(bottom: 12),
+                                  child: CustomOutlineButton(
+                                    backgroundColor: _currentChartIndex == index
+                                        ? kWhite
+                                        : kBackgroundColor,
+                                    outlineBorderColor:
+                                        _currentChartIndex == index
+                                            ? kThemeRed
+                                            : kBackgroundColor,
+                                    title: _list[index].key,
+                                    titleColor: _currentChartIndex == index
+                                        ? kThemeRed
+                                        : kBlack,
+                                    titleFontWeight: _currentChartIndex == index
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
+                                    onTap: () async {
+                                      setState(() {
+                                        _currentChartIndex = index;
+                                      });
 
-                                storageBox.write(
-                                    "chartPreference", _list[index].value);
+                                      storageBox.write("chartPreference",
+                                          _list[index].value);
+                                    },
+                                  ),
+                                );
                               },
-                            ),
-                          );
-                        },
-                      );
-                    },
+                            );
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ),

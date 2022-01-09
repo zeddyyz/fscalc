@@ -1,17 +1,61 @@
-import 'dart:async';
+import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:fscalc/free/utilities/constants.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
-class ChartScreen extends StatelessWidget {
+class ChartScreen extends StatefulWidget {
   const ChartScreen({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context) {
-    final Completer<WebViewController> _controllerTradingView =
-        Completer<WebViewController>();
+  State<ChartScreen> createState() => _ChartScreenState();
+}
 
+class _ChartScreenState extends State<ChartScreen>
+    with TickerProviderStateMixin {
+  late AnimationController _largeController;
+  late Animation<Offset> _largeAnimation;
+  // late AnimationController _smallController;
+  // late Animation<Offset> _smallAnimation;
+
+  late WebViewController _webViewController;
+  bool _showOverlay = true;
+  bool _visible = true;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _largeController = AnimationController(
+      duration: const Duration(seconds: 2),
+      vsync: this,
+    );
+
+    _largeAnimation = Tween<Offset>(
+      begin: const Offset(0.0, 0.0),
+      end: const Offset(0.85, 0.0),
+    ).animate(CurvedAnimation(
+      parent: _largeController,
+      // curve: Curves.easeInCubic,
+      curve: Curves.easeInToLinear,
+    ));
+
+    // _smallController = AnimationController(
+    //   duration: const Duration(seconds: 2),
+    //   vsync: this,
+    // );
+
+    // _smallAnimation = Tween<Offset>(
+    //   begin: const Offset(0.5, 0.0),
+    //   end: const Offset(0.0, 0.0),
+    // ).animate(CurvedAnimation(
+    //   parent: _smallController,
+    //   curve: Curves.easeInCubic,
+    // ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
@@ -27,16 +71,161 @@ class ChartScreen extends StatelessWidget {
                     defaultChartPreference,
                 javascriptMode: JavascriptMode.unrestricted,
                 gestureNavigationEnabled: true,
-                onWebViewCreated: (WebViewController webViewController) {
-                  if (!_controllerTradingView.isCompleted) {
-                    _controllerTradingView.complete(webViewController);
-                  } else {
-                    const CircularProgressIndicator();
-                  }
+                onWebViewCreated: (controller) {
+                  _webViewController = controller;
                 },
               ),
             ),
           ),
+          _showOverlay
+              ? Positioned(
+                  bottom: 24,
+                  left: screenWidth * 0.1,
+                  width: screenWidth * 0.8,
+                  height: 50,
+                  child: SlideTransition(
+                    position: _largeAnimation,
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 500),
+                      opacity: _visible ? 1.0 : 0.0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: kWhite.withOpacity(0.96),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: kBlack.withOpacity(0.18),
+                              blurRadius: 24,
+                              spreadRadius: 12,
+                              offset: const Offset(0, 8),
+                            ),
+                            // BoxShadow(
+                            //   color: kBackgroundColor.withOpacity(0.1),
+                            //   blurRadius: 40,
+                            //   spreadRadius: 0,
+                            //   offset: const Offset(0, 8),
+                            // ),
+                            // BoxShadow(
+                            //   color: kBackgroundColor.withOpacity(0.3),
+                            //   blurRadius: 48,
+                            //   spreadRadius: 0,
+                            //   offset: const Offset(0, 20),
+                            // ),
+                          ],
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            IconButton(
+                              icon: const Icon(
+                                Icons.chevron_left_rounded,
+                                color: kBlue,
+                                size: 32,
+                              ),
+                              onPressed: () async {
+                                if (await _webViewController.canGoBack()) {
+                                  _webViewController.goBack();
+                                }
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                // Icons.refresh_rounded,
+                                Icons.restart_alt_rounded,
+                                color: kBlue,
+                                size: 28,
+                              ),
+                              onPressed: () async {
+                                await _webViewController.reload();
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.refresh,
+                                color: kBlue,
+                                size: 28,
+                              ),
+                              onPressed: () async {
+                                await _webViewController.loadUrl(
+                                    storageBox.read("chartPreference") ??
+                                        defaultChartPreference);
+                              },
+                            ),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(
+                                Icons.keyboard_arrow_down_rounded,
+                                color: kBlue,
+                                size: 32,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _showOverlay = false;
+                                  _visible = !_visible;
+                                });
+                                _largeController.forward();
+                              },
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              : Positioned(
+                  bottom: 24,
+                  right: screenWidth * 0.1,
+                  width: 36,
+                  height: 40,
+                  child: SlideTransition(
+                    position: _largeAnimation,
+                    child: AnimatedOpacity(
+                      duration: const Duration(milliseconds: 500),
+                      opacity: !_visible ? 1.0 : 0.0,
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: kWhite.withOpacity(0.5),
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: kBlack.withOpacity(0.18),
+                              blurRadius: 20,
+                              spreadRadius: 4,
+                              offset: const Offset(0, 4),
+                            ),
+                            // BoxShadow(
+                            //   color: kWhite.withOpacity(0.1),
+                            //   blurRadius: 40,
+                            //   spreadRadius: 0,
+                            //   offset: const Offset(0, 8),
+                            // ),
+                            // BoxShadow(
+                            //   color: kWhite.withOpacity(0.3),
+                            //   blurRadius: 48,
+                            //   spreadRadius: 0,
+                            //   offset: const Offset(0, 20),
+                            // ),
+                          ],
+                        ),
+                        child: IconButton(
+                          padding: const EdgeInsets.all(0),
+                          icon: const Icon(
+                            Icons.keyboard_arrow_up_rounded,
+                            color: kBlack,
+                            size: 32,
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _showOverlay = true;
+                              _visible = !_visible;
+                            });
+                            _largeController.reverse();
+                          },
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
         ],
       ),
     );
