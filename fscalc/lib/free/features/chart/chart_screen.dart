@@ -137,7 +137,9 @@ class _ChartScreenState extends State<ChartScreen>
                                       defaultChartPreference);
                             },
                           ),
-                          _loading ? Text("Loading...") : const SizedBox(),
+                          _loading
+                              ? const Text("Loading...")
+                              : const SizedBox(),
                           const Spacer(),
                           IconButton(
                             icon: const Icon(
