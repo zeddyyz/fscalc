@@ -4,11 +4,8 @@ import 'package:app_tracking_transparency/app_tracking_transparency.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fscalc/free/components/onboarding_screen.dart';
-import 'package:fscalc/free/controller/custom_provider.dart';
 import 'package:fscalc/free/controller/notification_service.dart';
-import 'package:fscalc/free/utilities/constants.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -57,32 +54,26 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-        create: (context) => CustomProvider(
-              url: storageBox.read("chartPreference") ?? defaultChartPreference,
-            ),
-        builder: (context, snapshot) {
-          return MaterialApp(
-            title: 'fscalc',
-            debugShowCheckedModeBanner: false,
-            theme: ThemeData(
-              appBarTheme: const AppBarTheme(
-                systemOverlayStyle: SystemUiOverlayStyle.light,
-              ),
-              splashColor: Colors.transparent,
-              highlightColor: Colors.transparent,
-            ),
-            home: GestureDetector(
-              child: const OnboardingScreen(),
-              onTap: () {
-                FocusScopeNode currentFocus = FocusScope.of(context);
-                if (!currentFocus.hasPrimaryFocus &&
-                    currentFocus.focusedChild != null) {
-                  FocusManager.instance.primaryFocus!.unfocus();
-                }
-              },
-            ),
-          );
-        });
+    return MaterialApp(
+      title: 'fscalc',
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+        appBarTheme: const AppBarTheme(
+          systemOverlayStyle: SystemUiOverlayStyle.light,
+        ),
+        splashColor: Colors.transparent,
+        highlightColor: Colors.transparent,
+      ),
+      home: GestureDetector(
+        child: const OnboardingScreen(),
+        onTap: () {
+          FocusScopeNode currentFocus = FocusScope.of(context);
+          if (!currentFocus.hasPrimaryFocus &&
+              currentFocus.focusedChild != null) {
+            FocusManager.instance.primaryFocus!.unfocus();
+          }
+        },
+      ),
+    );
   }
 }

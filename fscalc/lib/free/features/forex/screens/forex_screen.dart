@@ -7,6 +7,7 @@ import 'package:fscalc/free/components/cupertino_slideup_text.dart';
 import 'package:fscalc/free/features/forex/screens/forex_percent_screen.dart';
 import 'package:fscalc/free/models/ads_model.dart';
 import 'package:fscalc/free/utilities/constants.dart';
+import 'package:fscalc/free/utilities/responsive_layout.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class ForexScreen extends StatefulWidget {
@@ -160,36 +161,39 @@ class _ForexScreenState extends State<ForexScreen>
   }
 
   void _infoSlideUp() {
-    double screenHeight = MediaQuery.of(context).size.height;
     showModalBottomSheet(
       isScrollControlled: true,
       backgroundColor: kBackgroundColor.withOpacity(0),
       context: context,
       builder: (BuildContext context) => DraggableScrollableSheet(
-        initialChildSize: 0.9,
+        initialChildSize: isMobile ? 0.9 : 0.7,
         minChildSize: 0.3,
         maxChildSize: 0.95,
         builder: (_, controller) {
           return Container(
             decoration: BoxDecoration(
+              color: kBackgroundColor,
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(16),
                 topRight: Radius.circular(16),
               ),
-              color: kBackgroundColor,
             ),
-            height: screenHeight * 0.80,
             margin: const EdgeInsets.all(0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Center(child: CupertinoSlideUpBar()),
-                const CupertinoSlideUpTitle(title: "Forex Terms"),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: isMobile ? 0 : 12),
+                  child: const CupertinoSlideUpTitle(title: "Forex Terms"),
+                ),
                 Expanded(
                   child: ListView(
                     controller: controller,
                     shrinkWrap: true,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: isMobile ? 0 : 12),
                     children: [
                       const Padding(
                         padding: EdgeInsets.only(left: 25, top: 20, right: 20),

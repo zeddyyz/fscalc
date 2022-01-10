@@ -5,7 +5,6 @@ import 'package:fscalc/free/components/custom_button.dart';
 import 'package:fscalc/free/utilities/constants.dart';
 import 'package:fscalc/free/utilities/loading_screen.dart';
 import 'package:introduction_screen/introduction_screen.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({Key? key}) : super(key: key);
@@ -15,14 +14,13 @@ class OnboardingScreen extends StatefulWidget {
 }
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
-  late SharedPreferences _sharedPreferences;
   bool _onboardingShown = false;
   bool _isLoading = false;
 
   final introKey = GlobalKey<IntroductionScreenState>();
 
   void _onIntroEnd(context) {
-    _sharedPreferences.setBool("onboarding_shown", true);
+    storageBox.write("onboarding_shown", true);
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (_) => const BottomNav(),
@@ -38,18 +36,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   void initState() {
     super.initState();
     _isLoading = true;
-    _sharedPreferencesInitialization().then((value) => {
-          _sharedPreferencesOnboarding(),
-        });
+    onboarding();
   }
 
-  Future<void> _sharedPreferencesInitialization() async {
-    _sharedPreferences = await SharedPreferences.getInstance();
-  }
-
-  Future<void> _sharedPreferencesOnboarding() async {
-    bool? _value = _sharedPreferences.getBool("onboarding_shown");
-    // print("Onboarding shown: $_value");
+  Future<void> onboarding() async {
+    bool? _value = storageBox.read("onboarding_shown");
 
     if (_value == null) {
       setState(() {
@@ -61,11 +52,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         _onboardingShown = true;
         _isLoading = false;
       });
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(
-          builder: (context) => const BottomNav(),
-        ),
-      );
+      Future.delayed(const Duration(milliseconds: 100), () {
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => const BottomNav(),
+          ),
+        );
+      });
     }
   }
 

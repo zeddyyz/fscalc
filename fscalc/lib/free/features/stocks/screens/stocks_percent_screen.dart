@@ -218,14 +218,12 @@ class _StocksPercentScreenState extends State<StocksPercentScreen> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-          padding: MediaQuery.of(context).viewInsets,
-          height: screenHeight * 0.40,
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20.0),
-              topRight: Radius.circular(20.0),
-            ),
-            gradient: LinearGradient(
+          height: 250,
+          margin: EdgeInsets.symmetric(
+              horizontal: isMobile ? 20 : 80, vertical: isMobile ? 30 : 40),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: const LinearGradient(
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
               colors: [kThemeRed, Colors.deepOrange],
@@ -236,35 +234,33 @@ class _StocksPercentScreenState extends State<StocksPercentScreen> {
             ),
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: screenWidth * 0.85),
-                    child: CupertinoButton(
-                      child: const Icon(
-                        Icons.cancel,
-                        color: kWhite,
-                        size: 25,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: CupertinoButton(
+                    child: const Icon(
+                      Icons.cancel,
+                      color: kWhite,
+                      size: 25,
                     ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                   ),
-                ],
+                ),
               ),
-              const SizedBox(height: 20),
               Container(
-                width: screenWidth * 0.80,
-                height: screenHeight * 0.175,
+                width: double.maxFinite,
+                height: 150,
                 decoration: BoxDecoration(
+                  color: kWhite.withOpacity(0.5),
                   backgroundBlendMode: BlendMode.overlay,
                   borderRadius: BorderRadius.circular(20),
-                  color: kWhite.withOpacity(0.5),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 20),
+                margin: EdgeInsets.symmetric(horizontal: isMobile ? 32 : 40),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,

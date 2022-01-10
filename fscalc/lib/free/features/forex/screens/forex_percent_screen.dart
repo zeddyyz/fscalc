@@ -1,5 +1,8 @@
+import 'dart:ui';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fscalc/free/components/cupertino_close_icon.dart';
 import 'package:fscalc/free/components/custom_button.dart';
 import 'package:fscalc/free/components/custom_textfield.dart';
 import 'package:fscalc/free/utilities/constants.dart';
@@ -47,7 +50,7 @@ class _ForexPercentScreenState extends State<ForexPercentScreen> {
   bool nullValues = true;
 
   void calculatePercentValues() {
-    var _currencySymbol =
+    String _currencySymbol =
         storageBox.read("currencySymbol") ?? defaultCurrencySymbol;
 
     if (!mounted) return;
@@ -76,7 +79,7 @@ class _ForexPercentScreenState extends State<ForexPercentScreen> {
         nullValues = false;
         double dollarRisk = accountSize! * (percentRisk! / 100);
         riskAmountText =
-            "Investment: " + _currencySymbol! + dollarRisk.toStringAsFixed(2);
+            "Investment: " + _currencySymbol + dollarRisk.toStringAsFixed(2);
 
         if (entryPrice! > targetPrice!) {
           // Short trade
@@ -89,7 +92,7 @@ class _ForexPercentScreenState extends State<ForexPercentScreen> {
               (entryPrice! * 10000) - (targetPrice! * 10000);
           String resultText =
               (returnCalculation * (lots * 10)).toStringAsFixed(2);
-          returnText = "Potential Return: \$" + resultText;
+          returnText = "Potential Return: " + _currencySymbol + resultText;
         } else {
           // Long trade
           // Lot size calculation
@@ -101,7 +104,7 @@ class _ForexPercentScreenState extends State<ForexPercentScreen> {
               (targetPrice! * 10000) - (entryPrice! * 10000);
           String resultText =
               (returnCalculation * (lots * 10)).toStringAsFixed(2);
-          returnText = "Potential Return: " + _currencySymbol! + resultText;
+          returnText = "Potential Return: " + _currencySymbol + resultText;
         }
       }
     });
@@ -228,14 +231,12 @@ class _ForexPercentScreenState extends State<ForexPercentScreen> {
       context: context,
       builder: (BuildContext context) {
         return Container(
-          padding: MediaQuery.of(context).viewInsets,
-          height: screenHeight * 0.40,
-          decoration: const BoxDecoration(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20.0),
-              topRight: Radius.circular(20.0),
-            ),
-            gradient: LinearGradient(
+          height: 250,
+          margin: EdgeInsets.symmetric(
+              horizontal: isMobile ? 20 : 80, vertical: isMobile ? 30 : 40),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20),
+            gradient: const LinearGradient(
               begin: Alignment.topRight,
               end: Alignment.bottomLeft,
               colors: [kThemeRed, Colors.deepOrange],
@@ -246,35 +247,33 @@ class _ForexPercentScreenState extends State<ForexPercentScreen> {
             ),
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Row(
-                children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: screenWidth * 0.85),
-                    child: CupertinoButton(
-                      child: const Icon(
-                        Icons.cancel,
-                        color: kWhite,
-                        size: 25,
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
+              Align(
+                alignment: Alignment.centerRight,
+                child: Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: CupertinoButton(
+                    child: const Icon(
+                      Icons.cancel,
+                      color: kWhite,
+                      size: 25,
                     ),
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
                   ),
-                ],
+                ),
               ),
-              const SizedBox(height: 20),
               Container(
-                width: screenWidth * 0.80,
-                height: screenHeight * 0.175,
+                width: double.maxFinite,
+                height: 150,
                 decoration: BoxDecoration(
+                  color: kWhite.withOpacity(0.5),
                   backgroundBlendMode: BlendMode.overlay,
                   borderRadius: BorderRadius.circular(20),
-                  color: kWhite.withOpacity(0.5),
                 ),
                 padding: const EdgeInsets.symmetric(horizontal: 20),
+                margin: EdgeInsets.symmetric(horizontal: isMobile ? 32 : 40),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
