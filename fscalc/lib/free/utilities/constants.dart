@@ -7,6 +7,7 @@ var kIsMobile = Device.get().isPhone;
 var kIsTablet = Device.get().isTablet;
 
 const kThemeRed = Color.fromRGBO(182, 17, 49, 1);
+const kHexThemeRed = Color(0xffB61131);
 
 var kBackgroundColor = Colors.grey.shade100;
 const kBlack = Colors.black;
@@ -28,6 +29,8 @@ var hasNotch = Device.get().hasNotch;
 var screenWidth = Device.screenWidth;
 var screenHeight = Device.screenHeight;
 
+const availableSize = double.maxFinite;
+
 var kInputBoxDecoration =
     BoxDecoration(color: kWhite, borderRadius: BorderRadius.circular(12));
 
@@ -42,4 +45,4 @@ var kPrefixIconPadding = const EdgeInsets.only(top: 10, left: 10, right: 10);
 final storageBox = GetStorage();
 var defaultCurrencyPreference = "Dollar";
 var defaultCurrencySymbol = "\$";
-var defaultChartPreference = "https://www.tradingview.com/";
+var defaultChartPreference = "https://finance.yahoo.com/";

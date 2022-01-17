@@ -1,22 +1,27 @@
 import 'dart:io';
 
 import 'package:app_tracking_transparency/app_tracking_transparency.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fscalc/free/components/onboarding_screen.dart';
 import 'package:fscalc/free/controller/notification_service.dart';
+import 'package:fscalc/paid/controllers/auth_controller.dart';
+import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
   NotificationService().init();
+  await Firebase.initializeApp();
   await GetStorage.init();
 
   if (Platform.isIOS) {
     final status = await AppTrackingTransparency.requestTrackingAuthorization();
     try {
-      if (status == TrackingStatus.notDetermined) {
+      if (await AppTrackingTransparency.trackingAuthorizationStatus ==
+          TrackingStatus.notDetermined) {
         await AppTrackingTransparency.requestTrackingAuthorization();
       }
     } catch (exception) {
@@ -36,7 +41,6 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final NotificationService _notificationService = NotificationService();
-  final storageBox = GetStorage();
 
   @override
   void initState() {
@@ -54,7 +58,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'fscalc',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

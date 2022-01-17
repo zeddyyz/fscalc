@@ -10,6 +10,7 @@ class CustomButton extends StatelessWidget {
     @required this.title,
     this.textColor,
     this.textSize,
+    this.fontWeight = FontWeight.w500,
     @required this.onTap,
   }) : super(key: key);
 
@@ -20,6 +21,7 @@ class CustomButton extends StatelessWidget {
   final String? title;
   final Color? textColor;
   final double? textSize;
+  final FontWeight? fontWeight;
   @required
   final VoidCallback? onTap;
 
@@ -38,7 +40,7 @@ class CustomButton extends StatelessWidget {
             title.toString(),
             style: TextStyle(
               color: textColor ?? kWhite,
-              fontWeight: FontWeight.w500,
+              fontWeight: fontWeight,
               fontSize: textSize ?? 18,
             ),
           ),

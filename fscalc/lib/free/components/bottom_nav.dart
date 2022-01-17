@@ -7,6 +7,9 @@ import 'package:fscalc/free/features/forex/screens/forex_screen.dart';
 import 'package:fscalc/free/features/settings/screens/settings_screen.dart';
 import 'package:fscalc/free/features/stocks/screens/stocks_screen.dart';
 import 'package:fscalc/free/utilities/constants.dart';
+import 'package:fscalc/paid/controllers/auth_controller.dart';
+import 'package:fscalc/paid/features/history/history_home.dart';
+import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
 
@@ -20,6 +23,8 @@ class BottomNav extends StatefulWidget {
 class _BottomNavState extends State<BottomNav> {
   late PersistentTabController _controller;
   late BannerAd _bannerAd;
+  // final AuthController _authController = Get.find<AuthController>();
+  final AuthController _authController = Get.put(AuthController());
 
   @override
   void initState() {
@@ -42,6 +47,11 @@ class _BottomNavState extends State<BottomNav> {
       const ForexScreen(),
       const StocksScreen(),
       const ChartScreen(),
+      // Obx(
+      //   () => _authController.isLoggedIn.isTrue
+      //       ? const HistoryHomeScreen()
+      //       : const SizedBox(),
+      // ),
       const SettingsScreen(),
     ];
   }

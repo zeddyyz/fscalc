@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:fscalc/free/components/loading.dart';
 import 'package:fscalc/free/utilities/constants.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -36,7 +35,6 @@ class _ChartScreenState extends State<ChartScreen>
       end: const Offset(0.85, 0.0),
     ).animate(CurvedAnimation(
       parent: _largeController,
-      // curve: Curves.easeInCubic,
       curve: Curves.fastOutSlowIn,
     ));
   }

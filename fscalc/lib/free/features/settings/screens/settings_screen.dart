@@ -2,11 +2,16 @@ import 'package:expandable/expandable.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:fscalc/free/components/cupertino_close_icon.dart';
 import 'package:fscalc/free/components/custom_button.dart';
 import 'package:fscalc/free/components/custom_outline_button.dart';
 import 'package:fscalc/free/models/ads_model.dart';
+import 'package:fscalc/free/utilities/alert_snackbar.dart';
 import 'package:fscalc/free/utilities/constants.dart';
-import 'package:fscalc/free/utilities/responsive_layout.dart';
+import 'package:fscalc/paid/controllers/auth_controller.dart';
+import 'package:fscalc/paid/features/authentication/auth_sign_up.dart';
+import 'package:fscalc/tester/paid_info.dart';
+import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -22,6 +27,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   late BannerAd _bannerAd;
   bool _isBannerAdReady = false;
+
+  final AlertSnackbar _alertSnackbar = AlertSnackbar();
 
   @override
   void initState() {
@@ -92,24 +99,19 @@ class _SettingsScreenState extends State<SettingsScreen> {
         storageBox.read("chartPreference") ?? defaultChartPreference;
 
     switch (chartPreference) {
-      case "https://www.tradingview.com/":
+      case "https://finance.yahoo.com/":
         setState(() {
           _currentChartIndex = 0;
         });
         break;
-      case "https://ca.finance.yahoo.com/":
+      case "https://www.google.com/finance/":
         setState(() {
           _currentChartIndex = 1;
         });
         break;
-      case "https://www.google.com/finance/":
-        setState(() {
-          _currentChartIndex = 2;
-        });
-        break;
       case "https://www.investing.com/":
         setState(() {
-          _currentChartIndex = 3;
+          _currentChartIndex = 2;
         });
         break;
       default:
@@ -118,8 +120,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   final Map<String, String> _availableOptionChart = {
-    "Tradingview": "https://www.tradingview.com/",
-    "Yahoo Finance": "https://ca.finance.yahoo.com/",
+    "Yahoo Finance": "https://finance.yahoo.com/",
     "Google Finance": "https://www.google.com/finance/",
     "Investing.com": "https://www.investing.com/",
   };
@@ -209,7 +210,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 color: kWhite,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(13),
               ),
               child: ExpandablePanel(
                 header: const Padding(
@@ -275,7 +276,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
                 color: kWhite,
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(13),
               ),
               child: ExpandablePanel(
                 header: Row(
@@ -292,7 +293,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ),
                     ),
                     IconButton(
-                      onPressed: () => _showAlertDialog(),
+                      onPressed: () => _alertSnackbar.alertSnackbar(context,
+                          "Please click on refresh icon on the previous page to change resource."),
                       icon: Icon(
                         Icons.info_outline_rounded,
                         color: kThemeRed.withOpacity(0.8),
@@ -348,6 +350,37 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             ),
+            const SizedBox(height: 20),
+            // * Investment History
+            Container(
+              width: screenWidth,
+              margin: EdgeInsets.symmetric(horizontal: isMobile ? 16 : 36),
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              decoration: BoxDecoration(
+                color: kWhite,
+                borderRadius: BorderRadius.circular(13),
+              ),
+              child: ListTile(
+                leading: const Icon(Icons.payment_rounded),
+                title: const Text(
+                  "Investment History",
+                  style: TextStyle(
+                    color: kBlack,
+                  ),
+                ),
+                trailing: IconButton(
+                  icon: const Icon(
+                    Icons.chevron_right_rounded,
+                  ),
+                  onPressed: () {
+                    // _paidInfoPopup();
+                    // Get.to(() => const PaidInfoTest());
+                    // Get.to(() => SignUpScreen());
+                    Get.put(AuthController());
+                  },
+                ),
+              ),
+            ),
             _isBannerAdReady
                 ? SizedBox(height: screenHeight * 0.1)
                 : const SizedBox(),
@@ -361,6 +394,126 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 ),
               ),
             const SizedBox(height: 36),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _paidInfoPopup() {
+    /*
+      - Firebase authentication with Getx Controller to manage user auth state
+    */
+    showModalBottomSheet(
+      isScrollControlled: true,
+      isDismissible: false,
+      backgroundColor: kWhite.withOpacity(0),
+      context: context,
+      builder: (BuildContext context) => Container(
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.only(
+            topLeft: Radius.circular(13),
+            topRight: Radius.circular(13),
+          ),
+          color: kBackgroundColor,
+        ),
+        height: availableSize,
+        margin: const EdgeInsets.all(0),
+        child: Stack(
+          children: [
+            Positioned(
+              child: Image.asset(
+                "assets/paid_info/dollar_notes_wrap.jpg",
+                fit: BoxFit.cover,
+                height: screenHeight,
+                width: screenWidth,
+                alignment: Alignment.center,
+              ),
+            ),
+            Positioned(
+              top: screenHeight * 0.15,
+              left: 0,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Get fscalc Premium",
+                      style: TextStyle(
+                        color: Colors.yellow.shade300,
+                        fontSize: 34,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: screenWidth * 0.9,
+                      child: const Text(
+                        "Unlock investment history, investment analytics, and remove ads",
+                        style: TextStyle(
+                          color: kWhite,
+                          fontSize: 28,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            Positioned(
+              bottom: screenHeight * 0.1,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(left: screenWidth * 0.05),
+                    decoration: BoxDecoration(
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.shade100.withOpacity(0.2),
+                          blurRadius: 20,
+                          spreadRadius: 4,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: CustomButton(
+                      title: "One-Time Payment",
+                      onTap: () => Get.to(() => const SignUpScreen()),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              height: screenHeight * 0.15,
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20,
+              ),
+              child: Row(
+                children: [
+                  const CupertinoCloseIcon(
+                    backgroundColor: kThemeRed,
+                    iconColor: kWhite,
+                  ),
+                  const Spacer(),
+                  CustomButton(
+                    title: "Restore",
+                    textSize: 14,
+                    buttonColor: Colors.transparent,
+                    textColor: kWhite,
+                    fontWeight: FontWeight.w800,
+                    height: 30,
+                    width: 100,
+                    onTap: () {},
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),
