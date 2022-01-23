@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fscalc/free/components/onboarding_screen.dart';
+import 'package:fscalc/main.dart';
 import 'package:fscalc/paid/features/authentication/auth_sign_up.dart';
 import 'package:fscalc/paid/features/history/history_home.dart';
 import 'package:get/get.dart';
@@ -8,6 +10,7 @@ class AuthController extends GetxController {
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   static AuthController instance = Get.find();
   late Rx<User?> firebaseUser;
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
 
   RxBool isLoggedIn = false.obs;
 
@@ -26,6 +29,7 @@ class AuthController extends GetxController {
       isLoggedIn = RxBool(false);
     } else {
       Get.to(() => const HistoryHomeScreen());
+      // Get.to(() => const OnboardingScreen());
       isLoggedIn = RxBool(true);
     }
   }
@@ -51,17 +55,28 @@ class AuthController extends GetxController {
     UserCredential result = await firebaseAuth.createUserWithEmailAndPassword(
         email: email, password: password);
     User user = result.user!;
-    await createProfile(email, name, user.uid);
+    // await createProfile(email, name, user.uid);
+    await addUser(email, name);
   }
 
-  final CollectionReference<Map<String, dynamic>> userCollection =
-      FirebaseFirestore.instance.collection('users');
+  // final CollectionReference<Map<String, dynamic>> userCollection =
+  //     FirebaseFirestore.instance.collection('users');
 
-  Future createProfile(String uid, String email, String name) async {
-    return await userCollection.doc(uid).set({
-      'email': email,
-      'name': name,
-    });
+  // Future createProfile(String uid, String email, String name) async {
+  //   return await userCollection.doc(uid).set({
+  //     'email': email,
+  //     'name': name,
+  //   });
+  // }
+
+  Future<void> addUser(String email, String name) {
+    return users
+        .add({
+          'email': email,
+          'name': name,
+        })
+        .then((value) => print("User Added"))
+        .catchError((error) => print("Failed to add user: $error"));
   }
 
   Future firebaseResetPassword(String email) async {

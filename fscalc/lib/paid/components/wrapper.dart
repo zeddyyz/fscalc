@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fscalc/paid/controllers/auth_controller.dart';
+import 'package:fscalc/paid/features/authentication/controllers/auth_controller.dart';
 import 'package:get/get.dart';
 
 class WrapperComponent extends StatefulWidget {

@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fscalc/free/components/onboarding_screen.dart';
 import 'package:fscalc/free/controller/notification_service.dart';
-import 'package:fscalc/paid/controllers/auth_controller.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 

@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fscalc/free/components/custom_button.dart';
 import 'package:fscalc/free/utilities/constants.dart';
-import 'package:fscalc/paid/controllers/auth_controller.dart';
 import 'package:fscalc/paid/features/authentication/auth_sign_up.dart';
 import 'package:fscalc/paid/features/authentication/components/main_layout.dart';
+import 'package:fscalc/paid/features/authentication/controllers/auth_controller.dart';
 import 'package:fscalc/paid/features/history/history_home.dart';
 import 'package:get/get.dart';
 

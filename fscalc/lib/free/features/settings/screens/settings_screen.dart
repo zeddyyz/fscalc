@@ -8,9 +8,9 @@ import 'package:fscalc/free/components/custom_outline_button.dart';
 import 'package:fscalc/free/models/ads_model.dart';
 import 'package:fscalc/free/utilities/alert_snackbar.dart';
 import 'package:fscalc/free/utilities/constants.dart';
-import 'package:fscalc/paid/controllers/auth_controller.dart';
 import 'package:fscalc/paid/features/authentication/auth_sign_up.dart';
-import 'package:fscalc/tester/paid_info.dart';
+import 'package:fscalc/paid/features/authentication/controllers/auth_controller.dart';
+import 'package:fscalc/paid/features/history/history_home.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -29,6 +29,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isBannerAdReady = false;
 
   final AlertSnackbar _alertSnackbar = AlertSnackbar();
+  final AuthController _authController = Get.put(AuthController());
 
   @override
   void initState() {
@@ -376,7 +377,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     // _paidInfoPopup();
                     // Get.to(() => const PaidInfoTest());
                     // Get.to(() => SignUpScreen());
-                    Get.put(AuthController());
+                    // Get.put(AuthController());
+                    _authController.isLoggedIn.value
+                        ? Get.to(() => const HistoryHomeScreen())
+                        : null;
                   },
                 ),
               ),

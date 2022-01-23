@@ -57,6 +57,8 @@ dependencies:
   cloud_functions: ^3.2.5
   in_app_purchase: ^2.0.1
   flutter_svg: ^1.0.1
+  syncfusion_flutter_datepicker: ^19.4.43
+  flutter_rounded_date_picker: ^2.0.2
 
 dev_dependencies:
   flutter_test:
