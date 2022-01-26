@@ -12,10 +12,12 @@ class CustomTextField extends StatelessWidget {
     this.cursorColor,
     this.inputDecoration,
     @required this.hintText,
+    this.hintTextColor,
     this.contentPadding,
     @required this.prefixIcon,
     this.onChanged,
     this.controller,
+    this.numberKeyboard = true,
   }) : super(key: key);
 
   final double? containerHeight;
@@ -26,10 +28,12 @@ class CustomTextField extends StatelessWidget {
   final Color? cursorColor;
   final InputDecoration? inputDecoration;
   final String? hintText;
+  final Color? hintTextColor;
   final EdgeInsets? contentPadding;
   final IconData? prefixIcon;
   final Function(String)? onChanged;
   final TextEditingController? controller;
+  final bool numberKeyboard;
 
   @override
   Widget build(BuildContext context) {
@@ -47,11 +51,13 @@ class CustomTextField extends StatelessWidget {
         controller: controller,
         style: textFieldStyle ?? const TextStyle(color: kBlack),
         cursorColor: cursorColor ?? kBlack,
-        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+        keyboardType: numberKeyboard
+            ? const TextInputType.numberWithOptions(decimal: true)
+            : null,
         decoration: inputDecoration ??
             InputDecoration(
-              hintStyle: const TextStyle(
-                color: kBlack,
+              hintStyle: TextStyle(
+                color: hintTextColor ?? kBlack,
                 fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),

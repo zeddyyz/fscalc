@@ -8,8 +8,8 @@ class ForexModel {
   String currencyPair;
   String bookValue;
   String marketValue;
-  String entryPrice;
-  String exitPrice;
+  // String entryPrice;
+  // String exitPrice;
   String result;
 
   ForexModel({
@@ -18,8 +18,6 @@ class ForexModel {
     required this.currencyPair,
     required this.bookValue,
     required this.marketValue,
-    required this.entryPrice,
-    required this.exitPrice,
     required this.result,
   });
 
@@ -32,8 +30,6 @@ class ForexModel {
       'currencyPair': currencyPair,
       'bookValue': bookValue,
       'marketValue': marketValue,
-      'entryPrice': entryPrice,
-      'exitPrice': exitPrice,
       'result': result,
     };
   }
@@ -45,8 +41,6 @@ class ForexModel {
       currencyPair: map['currencyPair'] ?? '',
       bookValue: map['bookValue'] ?? '',
       marketValue: map['marketValue'] ?? '',
-      entryPrice: map['entryPrice'] ?? '',
-      exitPrice: map['exitPrice'] ?? '',
       result: map['result'] ?? '',
     );
   }

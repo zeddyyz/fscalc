@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:another_flushbar/flushbar.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
 import 'package:fscalc/free/components/cupertino_close_icon.dart';
 import 'package:fscalc/free/components/cupertino_slideup_bar.dart';
 import 'package:fscalc/free/components/custom_button.dart';
+import 'package:fscalc/free/components/custom_textfield.dart';
 import 'package:fscalc/free/utilities/constants.dart';
 import 'package:fscalc/paid/features/authentication/controllers/auth_controller.dart';
 import 'package:fscalc/paid/features/history/forex/controller/forex_controller.dart';
@@ -28,7 +30,7 @@ class _ForexHistoryWidgetState extends State<ForexHistoryWidget> {
       .snapshots();
 
   final ForexController _forexController = Get.put(ForexController());
-  final AuthController _authController = Get.put(AuthController());
+  final AuthController _authController = Get.find<AuthController>();
 
   int _index = 0;
   String? _userEmail;
@@ -42,47 +44,16 @@ class _ForexHistoryWidgetState extends State<ForexHistoryWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // backgroundColor: kLightIndigo,
-      // appBar: AppBar(
-      //   backgroundColor: kBackgroundColor,
-      //   systemOverlayStyle: const SystemUiOverlayStyle(
-      //     statusBarBrightness: Brightness.light,
-      //   ),
-      //   elevation: 0,
-      //   title: const Text(
-      //     "Forex History",
-      //     style: TextStyle(color: kBlack),
-      //   ),
-      //   leading: IconButton(
-      //     icon: const Icon(
-      //       Icons.chevron_left_rounded,
-      //       size: 36,
-      //       color: kBlack,
-      //     ),
-      //     onPressed: () => Get.back(),
-      //   ),
-      //   actions: [
-      //     Padding(
-      //       padding: const EdgeInsets.only(right: 4),
-      //       child: IconButton(
-      //         icon: const Icon(
-      //           Icons.add_outlined,
-      //           size: 32,
-      //           color: kThemeRed,
-      //         ),
-      //         onPressed: _addTrade,
-      //       ),
-      //     )
-      //   ],
-      // ),
+      backgroundColor: kBackgroundColor,
       body: Container(
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: NetworkImage(
-                "https://firebasestorage.googleapis.com/v0/b/flutterbricks-public.appspot.com/o/backgrounds%2Fgradienta-26WixHTutxc-unsplash.jpg?alt=media&token=4b3d4985-d8fb-40e9-928f-cf7b4502a858"),
-            // todo - cached image provider to cache url for faster loading
+            image: CachedNetworkImageProvider(
+              "https://firebasestorage.googleapis.com/v0/b/flutterbricks-public.appspot.com/o/backgrounds%2Fgradienta-26WixHTutxc-unsplash.jpg?alt=media&token=4b3d4985-d8fb-40e9-928f-cf7b4502a858",
+            ),
+            // todo - check if opacity can be reduced on image only
             fit: BoxFit.cover,
           ),
         ),
@@ -140,7 +111,6 @@ class _ForexHistoryWidgetState extends State<ForexHistoryWidget> {
                   ),
                 ],
               ),
-              const SizedBox(height: 12),
               Expanded(
                 child: StreamBuilder<QuerySnapshot>(
                   stream: _forexStream,
@@ -155,6 +125,7 @@ class _ForexHistoryWidgetState extends State<ForexHistoryWidget> {
                     }
 
                     return ListView(
+                      padding: const EdgeInsets.only(top: 20),
                       children:
                           snapshot.data!.docs.map((DocumentSnapshot document) {
                         Map<String, dynamic> data =
@@ -169,7 +140,7 @@ class _ForexHistoryWidgetState extends State<ForexHistoryWidget> {
                           child: Container(
                             margin: const EdgeInsets.symmetric(
                               horizontal: 20,
-                              vertical: 8,
+                              vertical: 6,
                             ),
                             padding: const EdgeInsets.all(16),
                             decoration: BoxDecoration(
@@ -325,97 +296,100 @@ class _ForexHistoryWidgetState extends State<ForexHistoryWidget> {
       backgroundColor: kBackgroundColor.withOpacity(0),
       context: context,
       builder: (BuildContext context) => DraggableScrollableSheet(
-        initialChildSize: 0.7,
+        initialChildSize: 0.9,
         minChildSize: 0.3,
         maxChildSize: 0.95,
         builder: (_, controller) {
-          String? _date;
-          String? _unformattedDate;
+          String? _entryDate, _closeDate;
+          String _currencyPair, _bookValue, _marketValue;
 
           return StatefulBuilder(builder: (BuildContext context, modalState) {
-            Future dateTimePicker() async {
+            final Map<int, Color> _materialColor = {
+              50: const Color.fromRGBO(182, 17, 49, .1),
+              100: const Color.fromRGBO(182, 17, 49, .2),
+              200: const Color.fromRGBO(182, 17, 49, .3),
+              300: const Color.fromRGBO(182, 17, 49, .4),
+              400: const Color.fromRGBO(182, 17, 49, .5),
+              500: const Color.fromRGBO(182, 17, 49, .6),
+              600: const Color.fromRGBO(182, 17, 49, .7),
+              700: const Color.fromRGBO(182, 17, 49, .8),
+              800: const Color.fromRGBO(182, 17, 49, .9),
+              900: const Color.fromRGBO(182, 17, 49, 1),
+            };
+
+            Future entryDateTimePicker() async {
+              MaterialColor colorCustom =
+                  MaterialColor(0xffB61131, _materialColor);
+
               DateTime? newDateTime = await showRoundedDatePicker(
                 context: context,
-                // initialDate: _date != null
-                //     ? DateTime.parse(_unformattedDate!)
-                //     : DateTime.now(),
+                height: screenHeight * 0.35,
                 initialDate: DateTime.now(),
                 firstDate: DateTime(2019, 1),
-                theme: ThemeData(primarySwatch: Colors.deepPurple),
+                theme: ThemeData(
+                  primarySwatch: colorCustom,
+                ),
                 styleDatePicker: MaterialRoundedDatePickerStyle(
-                  textStyleDayButton:
-                      const TextStyle(fontSize: 36, color: Colors.white),
-                  textStyleYearButton: const TextStyle(
-                    fontSize: 52,
-                    color: Colors.white,
+                  decorationDateSelected: const BoxDecoration(
+                    color: kThemeRed,
+                    shape: BoxShape.circle,
                   ),
-                  textStyleDayHeader: const TextStyle(
-                    fontSize: 24,
-                    color: Colors.white,
-                  ),
-                  textStyleCurrentDayOnCalendar: const TextStyle(
-                    fontSize: 32,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textStyleDayOnCalendar:
-                      const TextStyle(fontSize: 28, color: Colors.white),
-                  textStyleDayOnCalendarSelected: const TextStyle(
-                    fontSize: 32,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textStyleDayOnCalendarDisabled: TextStyle(
-                      fontSize: 28, color: Colors.white.withOpacity(0.1)),
-                  textStyleMonthYearHeader: const TextStyle(
-                    fontSize: 32,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  paddingDatePicker: const EdgeInsets.all(0),
-                  paddingMonthHeader: const EdgeInsets.all(32),
-                  paddingActionBar: const EdgeInsets.all(16),
-                  paddingDateYearHeader: const EdgeInsets.all(32),
-                  sizeArrow: 50,
-                  colorArrowNext: Colors.white,
-                  colorArrowPrevious: Colors.white,
-                  marginLeftArrowPrevious: 16,
-                  marginTopArrowPrevious: 16,
-                  marginTopArrowNext: 16,
-                  marginRightArrowNext: 32,
-                  textStyleButtonAction:
-                      const TextStyle(fontSize: 28, color: Colors.white),
-                  textStyleButtonPositive: const TextStyle(
-                    fontSize: 28,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textStyleButtonNegative: TextStyle(
-                      fontSize: 28, color: Colors.white.withOpacity(0.5)),
-                  decorationDateSelected: BoxDecoration(
-                      color: Colors.orange[600], shape: BoxShape.circle),
-                  backgroundPicker: Colors.deepPurple[400],
-                  backgroundActionBar: Colors.deepPurple[300],
-                  backgroundHeaderMonth: Colors.deepPurple[300],
+                  paddingMonthHeader: const EdgeInsets.symmetric(vertical: 10),
                 ),
                 styleYearPicker: MaterialRoundedYearPickerStyle(
                   textStyleYear:
-                      const TextStyle(fontSize: 40, color: Colors.white),
+                      const TextStyle(fontSize: 40, color: kThemeRed),
                   textStyleYearSelected: const TextStyle(
-                    fontSize: 56,
-                    color: Colors.white,
+                    fontSize: 50,
+                    color: kLightIndigo,
                     fontWeight: FontWeight.bold,
                   ),
                   heightYearRow: 100,
-                  backgroundPicker: Colors.deepPurple[400],
                 ),
               );
 
               modalState(() {
-                _date = DateFormat('dd MMMM, yyyy')
+                _entryDate = DateFormat('dd MMMM, yyyy')
                     .format(newDateTime ?? DateTime.now())
                     .toString();
-                _unformattedDate = newDateTime.toString();
+              });
+            }
+
+            Future closeDateTimePicker() async {
+              MaterialColor colorCustom =
+                  MaterialColor(0xffB61131, _materialColor);
+
+              DateTime? newDateTime = await showRoundedDatePicker(
+                context: context,
+                height: screenHeight * 0.35,
+                initialDate: DateTime.now(),
+                firstDate: DateTime(2019, 1),
+                theme: ThemeData(
+                  primarySwatch: colorCustom,
+                ),
+                styleDatePicker: MaterialRoundedDatePickerStyle(
+                  decorationDateSelected: const BoxDecoration(
+                    color: kThemeRed,
+                    shape: BoxShape.circle,
+                  ),
+                  paddingMonthHeader: const EdgeInsets.symmetric(vertical: 10),
+                ),
+                styleYearPicker: MaterialRoundedYearPickerStyle(
+                  textStyleYear:
+                      const TextStyle(fontSize: 40, color: kThemeRed),
+                  textStyleYearSelected: const TextStyle(
+                    fontSize: 50,
+                    color: kLightIndigo,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  heightYearRow: 100,
+                ),
+              );
+
+              modalState(() {
+                _closeDate = DateFormat('dd MMMM, yyyy')
+                    .format(newDateTime ?? DateTime.now())
+                    .toString();
               });
             }
 
@@ -467,59 +441,113 @@ class _ForexHistoryWidgetState extends State<ForexHistoryWidget> {
                         shrinkWrap: true,
                         controller: controller,
                         children: [
-                          SizedBox(
-                            height: 150,
-                            child: Row(
-                              children: [
-                                const Text("Entry Date"),
-                                Expanded(
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: MaterialButton(
-                                      color: kThemeRed,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(13),
-                                      ),
-                                      child: const Text(
-                                        "Date",
-                                        style: TextStyle(color: kWhite),
-                                      ),
-                                      onPressed: dateTimePicker,
-                                    ),
-                                  ),
+                          CustomTextField(
+                            hintText: "Name of currency pair?",
+                            hintTextColor: kBlack.withOpacity(0.5),
+                            numberKeyboard: false,
+                            prefixIcon: Icons.attach_money_rounded,
+                            onChanged: (value) {
+                              if (value != "") {
+                                _currencyPair = value;
+                              }
+                            },
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomTextField(
+                                  hintText:
+                                      _entryDate ?? "Entry date of position?",
+                                  hintTextColor: kBlack.withOpacity(0.5),
+                                  prefixIcon: Icons.calendar_today_outlined,
+                                  // onChanged: (value) {
+                                  //   if (value != "") _entryDate = value;
+                                  // },
                                 ),
-                              ],
-                            ),
-                          ),
-                          SizedBox(
-                            height: 40,
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                _date ?? "No date selected",
-                                style: const TextStyle(color: kBlack),
                               ),
-                            ),
+                              const SizedBox(width: 4),
+                              GestureDetector(
+                                child: Container(
+                                  height: 60,
+                                  width: 80,
+                                  decoration: BoxDecoration(
+                                    color: kWhite,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: const Text("Select"),
+                                ),
+                                onTap: entryDateTimePicker,
+                              ),
+                            ],
                           ),
-                          CustomInputFieldFb1(
-                            hintText: "What price did you enter the position?",
-                            inputController: TextEditingController(),
-                            labelText: "Entry Price",
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: CustomTextField(
+                                  hintText:
+                                      _closeDate ?? "Exit date of position?",
+                                  hintTextColor: kBlack.withOpacity(0.5),
+                                  prefixIcon: Icons.calendar_today_outlined,
+                                  // onChanged: (value) {
+                                  //   if (value != "") _closeDate = value;
+                                  // },
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              GestureDetector(
+                                child: Container(
+                                  height: 60,
+                                  width: 80,
+                                  decoration: BoxDecoration(
+                                    color: kWhite,
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: const Text("Select"),
+                                ),
+                                onTap: closeDateTimePicker,
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 20),
-                          CustomInputFieldFb1(
-                            hintText: "What price did you exit the position?",
-                            inputController: TextEditingController(),
-                            labelText: "Exit Price",
+                          const SizedBox(height: 4),
+                          CustomTextField(
+                            hintText: "Book value?",
+                            hintTextColor: kBlack.withOpacity(0.5),
+                            prefixIcon: Icons.attach_money_rounded,
+                            onChanged: (value) {
+                              if (value != "") {
+                                _bookValue = value;
+                              }
+                            },
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 4),
+                          CustomTextField(
+                            hintText: "Market value?",
+                            hintTextColor: kBlack.withOpacity(0.5),
+                            prefixIcon: Icons.money_off_csred_rounded,
+                            onChanged: (value) {
+                              if (value != "") _marketValue = value;
+                            },
+                          ),
+                          const SizedBox(height: 8),
                           CustomButton(
                             title: "Add",
                             onTap: () {
                               var id = storageBox.read("id");
                               id++;
+
                               _forexController.addTrade(
-                                  id, _userEmail ?? '', "$id" "000");
+                                id,
+                                _userEmail ?? '',
+                                _currencyPair,
+                                DateTime.parse(_entryDate!),
+                                DateTime.parse(_closeDate!),
+                                _bookValue,
+                                _marketValue,
+                              );
                               storageBox.write("id", id);
                               Get.back();
                             },
@@ -651,74 +679,13 @@ class CustomAppBar extends StatelessWidget with PreferredSizeWidget {
             onPressed: () {
               var id = storageBox.read("id");
               id++;
-              _forexController.addTrade(id, 'zawar@gmail.com', "$id" "000");
+              // _forexController.addTrade(id, 'zawar@gmail.com', "$id" "000");
               storageBox.write("id", id);
             },
             // onPressed: _addTrade,
           ),
         )
       ],
-    );
-  }
-}
-
-class CustomInputFieldFb1 extends StatelessWidget {
-  final TextEditingController inputController;
-  final String hintText;
-  final Color primaryColor;
-  final String labelText;
-
-  const CustomInputFieldFb1(
-      {Key? key,
-      required this.inputController,
-      required this.hintText,
-      required this.labelText,
-      this.primaryColor = Colors.indigo})
-      : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      height: 50,
-      decoration: BoxDecoration(boxShadow: [
-        BoxShadow(
-            offset: const Offset(12, 26),
-            blurRadius: 50,
-            spreadRadius: 0,
-            color: Colors.grey.withOpacity(.1)),
-      ]),
-      child: TextField(
-        controller: inputController,
-        onChanged: (value) {
-          //Do something wi
-        },
-        keyboardType: TextInputType.emailAddress,
-        style: const TextStyle(fontSize: 16, color: Colors.black),
-        decoration: InputDecoration(
-          labelText: labelText,
-          floatingLabelBehavior: FloatingLabelBehavior.always,
-          filled: true,
-          hintText: hintText,
-          hintStyle: TextStyle(color: Colors.grey.withOpacity(.75)),
-          fillColor: Colors.transparent,
-          contentPadding:
-              const EdgeInsets.symmetric(vertical: 0.0, horizontal: 0.0),
-          border: UnderlineInputBorder(
-            borderSide:
-                BorderSide(color: primaryColor.withOpacity(.1), width: 2.0),
-          ),
-          focusedBorder: UnderlineInputBorder(
-            borderSide: BorderSide(color: primaryColor, width: 2.0),
-          ),
-          errorBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.red, width: 2.0),
-          ),
-          enabledBorder: UnderlineInputBorder(
-            borderSide:
-                BorderSide(color: primaryColor.withOpacity(.1), width: 2.0),
-          ),
-        ),
-      ),
     );
   }
 }

@@ -27,12 +27,27 @@ class ForexController extends GetxController {
   // * CRUD functions
   CollectionReference forexHistory =
       FirebaseFirestore.instance.collection("forexHistory");
+  late ForexModel _forexModel;
 
-  Future<void> addTrade(int id, String email, String bookValue) {
+  Future<void> addTrade(
+    int id,
+    String email,
+    String currencyPair,
+    DateTime entryDate,
+    DateTime exitDate,
+    String bookValue,
+    String marketValue,
+  ) {
     return forexHistory.add({
       "id": id,
       "email": email,
-      "bookValue": bookValue,
+      _forexModel.currencyPair: currencyPair,
+      _forexModel.entryDate: Timestamp.fromDate(entryDate),
+      _forexModel.exitDate: Timestamp.fromDate(exitDate),
+      _forexModel.bookValue: bookValue,
+      _forexModel.marketValue: marketValue,
+      _forexModel.result:
+          (double.parse(marketValue) - double.parse(bookValue)).toString(),
     });
   }
 
