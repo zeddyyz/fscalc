@@ -1,16 +1,14 @@
 import 'package:expandable/expandable.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:fscalc/free/components/cupertino_close_icon.dart';
 import 'package:fscalc/free/components/custom_button.dart';
 import 'package:fscalc/free/components/custom_outline_button.dart';
 import 'package:fscalc/free/models/ads_model.dart';
 import 'package:fscalc/free/utilities/alert_snackbar.dart';
 import 'package:fscalc/free/utilities/constants.dart';
-import 'package:fscalc/paid/features/authentication/auth_sign_up.dart';
-import 'package:fscalc/paid/features/authentication/controllers/auth_controller.dart';
-import 'package:fscalc/paid/features/history/history_home.dart';
+import 'package:fscalc/paid/authentication/auth_controller.dart';
+import 'package:fscalc/paid/authentication/auth_screen.dart';
+import 'package:fscalc/paid/home/paid_home.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -29,7 +27,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   bool _isBannerAdReady = false;
 
   final AlertSnackbar _alertSnackbar = AlertSnackbar();
-  final AuthController _authController = Get.put(AuthController());
+  final AuthController controller = Get.put(AuthController());
 
   @override
   void initState() {
@@ -352,6 +350,35 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
             ),
             const SizedBox(height: 20),
+            // ? Test New Paid Folder
+            Obx(
+              () => controller.isLoggedIn.isTrue
+                  ? ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const PaidHome(),
+                          ),
+                        );
+                      },
+                      child: const Text("GET IN"),
+                    )
+                  : ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const AuthScreen(),
+                          ),
+                        );
+                      },
+                      child: const Text("LOG IN"),
+                    ),
+            ),
+
+            const SizedBox(height: 20),
+
             // * Investment History
             Container(
               width: screenWidth,
@@ -378,9 +405,9 @@ class _SettingsScreenState extends State<SettingsScreen> {
                     // Get.to(() => const PaidInfoTest());
                     // Get.to(() => SignUpScreen());
                     // Get.put(AuthController());
-                    _authController.isLoggedIn.value
-                        ? Get.to(() => const HistoryHomeScreen())
-                        : null;
+                    // _authController.isLoggedIn.value
+                    //     ? Get.to(() => const HistoryHomeScreen())
+                    //     : null;
                   },
                 ),
               ),
@@ -472,24 +499,24 @@ class _SettingsScreenState extends State<SettingsScreen> {
               bottom: screenHeight * 0.1,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(left: screenWidth * 0.05),
-                    decoration: BoxDecoration(
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.shade100.withOpacity(0.2),
-                          blurRadius: 20,
-                          spreadRadius: 4,
-                          offset: const Offset(0, 8),
-                        ),
-                      ],
-                    ),
-                    child: CustomButton(
-                      title: "One-Time Payment",
-                      onTap: () => Get.to(() => const SignUpScreen()),
-                    ),
-                  ),
+                children: const [
+                  // Container(
+                  //   margin: EdgeInsets.only(left: screenWidth * 0.05),
+                  //   decoration: BoxDecoration(
+                  //     boxShadow: [
+                  //       BoxShadow(
+                  //         color: Colors.grey.shade100.withOpacity(0.2),
+                  //         blurRadius: 20,
+                  //         spreadRadius: 4,
+                  //         offset: const Offset(0, 8),
+                  //       ),
+                  //     ],
+                  //   ),
+                  //   child: CustomButton(
+                  //     title: "One-Time Payment",
+                  //     onTap: () => Get.to(() => const SignUpScreen()),
+                  //   ),
+                  // ),
                 ],
               ),
             ),

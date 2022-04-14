@@ -1,5 +1,3 @@
-// ignore_for_file: avoid_print
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fscalc/free/features/chart/chart_screen.dart';
@@ -7,7 +5,8 @@ import 'package:fscalc/free/features/forex/screens/forex_screen.dart';
 import 'package:fscalc/free/features/settings/screens/settings_screen.dart';
 import 'package:fscalc/free/features/stocks/screens/stocks_screen.dart';
 import 'package:fscalc/free/utilities/constants.dart';
-import 'package:fscalc/paid/features/authentication/controllers/auth_controller.dart';
+import 'package:fscalc/paid/authentication/auth_controller.dart';
+import 'package:fscalc/paid/home/paid_home.dart';
 import 'package:get/get.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:persistent_bottom_nav_bar/persistent-tab-view.dart';
@@ -21,8 +20,6 @@ class BottomNav extends StatefulWidget {
 
 class _BottomNavState extends State<BottomNav> {
   late PersistentTabController _controller;
-  late BannerAd _bannerAd;
-  // final AuthController _authController = Get.find<AuthController>();
   final AuthController _authController = Get.put(AuthController());
 
   @override
@@ -33,7 +30,6 @@ class _BottomNavState extends State<BottomNav> {
 
   @override
   void dispose() {
-    _bannerAd.dispose();
     super.dispose();
   }
 
@@ -42,46 +38,82 @@ class _BottomNavState extends State<BottomNav> {
   }
 
   List<Widget> _buildScreens() {
-    return [
-      const ForexScreen(),
-      const StocksScreen(),
-      const ChartScreen(),
-      // Obx(
-      //   () => _authController.isLoggedIn.isTrue
-      //       ? const HistoryHomeScreen()
-      //       : const SizedBox(),
-      // ),
-      const SettingsScreen(),
-    ];
+    return _authController.isLoggedIn.isTrue
+        ? [
+            const ForexScreen(),
+            const StocksScreen(),
+            const ChartScreen(),
+            const SettingsScreen(),
+            const PaidHome(),
+          ]
+        : [
+            const ForexScreen(),
+            const StocksScreen(),
+            const ChartScreen(),
+            const SettingsScreen(),
+          ];
   }
 
   List<PersistentBottomNavBarItem> _navBarsItems() {
-    return [
-      PersistentBottomNavBarItem(
-        icon: const Icon(CupertinoIcons.money_dollar_circle),
-        title: ("Forex"),
-        activeColorPrimary: kThemeRed,
-        inactiveColorPrimary: CupertinoColors.systemGrey,
-      ),
-      PersistentBottomNavBarItem(
-        icon: const Icon(CupertinoIcons.money_dollar),
-        title: ("Stocks"),
-        activeColorPrimary: kThemeRed,
-        inactiveColorPrimary: CupertinoColors.systemGrey,
-      ),
-      PersistentBottomNavBarItem(
-        icon: const Icon(Icons.analytics_outlined),
-        title: ("Info"),
-        activeColorPrimary: kThemeRed,
-        inactiveColorPrimary: CupertinoColors.systemGrey,
-      ),
-      PersistentBottomNavBarItem(
-        icon: const Icon(CupertinoIcons.settings),
-        title: ("Settings"),
-        activeColorPrimary: kThemeRed,
-        inactiveColorPrimary: CupertinoColors.systemGrey,
-      ),
-    ];
+    return _authController.isLoggedIn.isTrue
+        ? [
+            PersistentBottomNavBarItem(
+              icon: const Icon(CupertinoIcons.money_dollar_circle),
+              title: ("Forex"),
+              activeColorPrimary: kThemeRed,
+              inactiveColorPrimary: CupertinoColors.systemGrey,
+            ),
+            PersistentBottomNavBarItem(
+              icon: const Icon(CupertinoIcons.money_dollar),
+              title: ("Stocks"),
+              activeColorPrimary: kThemeRed,
+              inactiveColorPrimary: CupertinoColors.systemGrey,
+            ),
+            PersistentBottomNavBarItem(
+              icon: const Icon(Icons.analytics_outlined),
+              title: ("Info"),
+              activeColorPrimary: kThemeRed,
+              inactiveColorPrimary: CupertinoColors.systemGrey,
+            ),
+            PersistentBottomNavBarItem(
+              icon: const Icon(CupertinoIcons.settings),
+              title: ("Settings"),
+              activeColorPrimary: kThemeRed,
+              inactiveColorPrimary: CupertinoColors.systemGrey,
+            ),
+            PersistentBottomNavBarItem(
+              icon: const Icon(Icons.assessment),
+              title: ("Forex"),
+              activeColorPrimary: kThemeRed,
+              inactiveColorPrimary: CupertinoColors.systemGrey,
+            ),
+          ]
+        : [
+            PersistentBottomNavBarItem(
+              icon: const Icon(CupertinoIcons.money_dollar_circle),
+              title: ("Forex"),
+              activeColorPrimary: kThemeRed,
+              inactiveColorPrimary: CupertinoColors.systemGrey,
+            ),
+            PersistentBottomNavBarItem(
+              icon: const Icon(CupertinoIcons.money_dollar),
+              title: ("Stocks"),
+              activeColorPrimary: kThemeRed,
+              inactiveColorPrimary: CupertinoColors.systemGrey,
+            ),
+            PersistentBottomNavBarItem(
+              icon: const Icon(Icons.analytics_outlined),
+              title: ("Info"),
+              activeColorPrimary: kThemeRed,
+              inactiveColorPrimary: CupertinoColors.systemGrey,
+            ),
+            PersistentBottomNavBarItem(
+              icon: const Icon(CupertinoIcons.settings),
+              title: ("Settings"),
+              activeColorPrimary: kThemeRed,
+              inactiveColorPrimary: CupertinoColors.systemGrey,
+            ),
+          ];
   }
 
   @override
