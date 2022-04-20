@@ -12,6 +12,7 @@ class ForexModel {
   // String entryPrice;
   // String exitPrice;
   String result;
+  bool isOpen;
 
   ForexModel({
     required this.id,
@@ -21,6 +22,7 @@ class ForexModel {
     required this.bookValue,
     required this.marketValue,
     required this.result,
+    required this.isOpen,
   });
 
   static fromSnapshot(QueryDocumentSnapshot<Object?> e) {}
@@ -34,6 +36,7 @@ class ForexModel {
       'bookValue': bookValue,
       'marketValue': marketValue,
       'result': result,
+      'isOpen': isOpen,
     };
   }
 
@@ -46,6 +49,7 @@ class ForexModel {
       bookValue: map['bookValue'] ?? '',
       marketValue: map['marketValue'] ?? '',
       result: map['result'] ?? '',
+      isOpen: map['isOpen'] ?? false,
     );
   }
 
