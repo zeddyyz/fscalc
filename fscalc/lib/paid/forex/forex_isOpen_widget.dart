@@ -24,6 +24,12 @@ class _ForexIsOpenWidgetState extends State<ForexIsOpenWidget> {
   final String _currencySymbol =
       storageBox.read("currencySymbol") ?? defaultCurrencySymbol;
 
+  static const ktsDetails = TextStyle(
+    fontSize: 16,
+    color: kBlack,
+    fontWeight: FontWeight.w500,
+  );
+
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
@@ -53,10 +59,6 @@ class _ForexIsOpenWidgetState extends State<ForexIsOpenWidget> {
           );
         }
 
-        // if (snapshot.connectionState == ConnectionState.waiting) {
-        //   return const Text("Loading");
-        // }'
-
         if (snapshot.hasData) {
           return ListView(
             shrinkWrap: true,
@@ -67,14 +69,21 @@ class _ForexIsOpenWidgetState extends State<ForexIsOpenWidget> {
               Map<String, dynamic> data =
                   document.data()! as Map<String, dynamic>;
 
+              var id = data['id'];
               var instrument = data['currencyPair'];
               var bookValue = data['bookValue'];
               var entryDate = data['entryDate'];
               var exitDate = data['exitDate'];
-              var id = data['id'];
               var isOpen = data['isOpen'];
               var marketValue = data['marketValue'];
-              var result = data['result'];
+              // var result = data['result'];
+
+              // if (_forexController.instrumentList.contains(instrument)) {
+              //   // log(_forexController.instrumentList.toString());
+              //   // log(instrument);
+              //   log(instrument);
+              //   _forexController.fetchPrices(instrument);
+              // }
 
               return Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -91,115 +100,131 @@ class _ForexIsOpenWidgetState extends State<ForexIsOpenWidget> {
                   ),
                   collapsed: Padding(
                     padding: const EdgeInsets.only(bottom: 12),
-                    child: Text(
-                      "Entry: ${_forexController.readableDatefromMilliseconds(entryDate)}",
-                      style: const TextStyle(
-                        fontSize: 16,
-                        color: kBlack,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ),
-                  expanded: Container(
-                    margin: const EdgeInsets.symmetric(vertical: 10),
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 16,
-                      horizontal: 20,
-                    ),
-                    decoration: BoxDecoration(
-                      color: kWhite,
-                      borderRadius: BorderRadius.circular(13),
-                    ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        const Text("Current Profit/Loss: ", style: ktsDetails),
                         const SizedBox(height: 4),
                         Text(
-                          "Cost: " + _currencySymbol + bookValue,
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: kBlack,
-                            fontWeight: FontWeight.w500,
-                          ),
+                          _forexController
+                              .readableDatefromMilliseconds(entryDate),
+                          style: ktsDetails,
                         ),
-                        const SizedBox(height: 4),
-                        Text(
-                          "Entry: ${_forexController.readableDatefromMilliseconds(entryDate)}",
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: kBlack,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        const Text(
-                          "Position Currently Open",
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: kBlack,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                        const SizedBox(height: 20),
-                        SizedBox(
-                          height: 50,
-                          child: Row(
+                      ],
+                    ),
+                  ),
+                  expanded: Padding(
+                    padding: const EdgeInsets.only(top: 4, bottom: 10),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () async {
-                                    _forexController.resetFormValues();
-                                    await editTradeModalBottomSheet(
-                                      id: id,
-                                      currencyPair: instrument,
-                                      entryDate: entryDate,
-                                      bookValue: bookValue,
-                                      isOpen: isOpen,
-                                      exitDate: exitDate,
-                                      marketValue: marketValue,
-                                    );
-                                  },
-                                  child: Container(
-                                    height: 40,
-                                    decoration: BoxDecoration(
-                                      color: kBlue,
-                                      borderRadius: BorderRadius.circular(13),
-                                    ),
-                                    child: const Center(
-                                      child: Text(
-                                        "Edit",
-                                        style: TextStyle(
-                                          color: kWhite,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "Cost: " + _currencySymbol + bookValue,
+                                style: ktsDetails,
+                              ),
+                              const SizedBox(height: 4),
+                              const Text(
+                                "Current Value: ",
+                                style: ktsDetails,
+                              ),
+                              const SizedBox(height: 4),
+                              const Text(
+                                "Potential Profit/Loss: ",
+                                style: ktsDetails,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                "Entry: ${_forexController.readableDatefromMilliseconds(entryDate)}",
+                                style: ktsDetails,
+                              ),
+                              const SizedBox(height: 4),
+                            ],
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 10),
+                          child: Column(
+                            children: [
+                              InkWell(
+                                onTap: () async {
+                                  _forexController.resetFormValues();
+                                  await editTradeModalBottomSheet(
+                                    id: id,
+                                    currencyPair: instrument,
+                                    entryDate: entryDate,
+                                    bookValue: bookValue,
+                                    isOpen: isOpen,
+                                    exitDate: exitDate,
+                                    marketValue: marketValue,
+                                  );
+                                },
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: kLightIndigo,
+                                    borderRadius: BorderRadius.circular(8),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: kLightIndigo.withOpacity(0.3),
+                                        offset: const Offset(0, 4),
+                                        blurRadius: 8,
+                                        spreadRadius: 0,
+                                      ),
+                                    ],
+                                  ),
+                                  margin: const EdgeInsets.only(bottom: 8),
+                                  width: 90,
+                                  height: 35,
+                                  child: const Center(
+                                    child: Text(
+                                      "Edit",
+                                      style: TextStyle(
+                                        color: kWhite,
+                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
                                   ),
                                 ),
                               ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: GestureDetector(
-                                  onTap: () async {
-                                    await _forexController.confirmDelete(
-                                      index: int.parse(id),
-                                    );
-                                  },
+                              InkWell(
+                                onTap: () async {
+                                  await _forexController.confirmDelete(
+                                    index: int.parse(id),
+                                  );
+                                },
+                                child: Container(
+                                  width: 90,
+                                  height: 35,
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [kLightIndigo, Colors.red],
+                                    ),
+                                    border: Border.all(
+                                      color: kLightIndigo,
+                                    ),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  padding: const EdgeInsets.all(0.8),
                                   child: Container(
-                                    height: 40,
                                     decoration: BoxDecoration(
-                                      color: kBlue,
-                                      borderRadius: BorderRadius.circular(13),
+                                      color: kBackgroundColor,
+                                      border:
+                                          Border.all(color: kBackgroundColor),
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 14,
+                                      vertical: 8,
                                     ),
                                     child: const Center(
                                       child: Text(
                                         "Delete",
                                         style: TextStyle(
-                                          color: kWhite,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.w600,
+                                          color: kLightIndigo,
+                                          fontWeight: FontWeight.w700,
                                         ),
                                       ),
                                     ),
@@ -209,38 +234,24 @@ class _ForexIsOpenWidgetState extends State<ForexIsOpenWidget> {
                             ],
                           ),
                         ),
-                        // Column(
-                        //   children: [
-                        //     IconButton(
-                        //       icon: Icon(
-                        //         Icons.delete_forever_rounded,
-                        //         color: kBlack.withOpacity(0.7),
-                        //       ),
-                        //       onPressed: () async {
-                        //         await _forexController.confirmDelete(
-                        //           index: id,
-                        //         );
-                        //       },
-                        //     ),
-                        //     IconButton(
-                        //       icon: Icon(
-                        //         Icons.edit,
-                        //         color: kBlack.withOpacity(0.7),
-                        //       ),
-                        //       onPressed: () {
-                        //         _forexController.resetFormValues();
-                        //         editTradeModalBottomSheet(
-                        //           id: id,
-                        //           currencyPair: instrument,
-                        //           entryDate: entryDate,
-                        //           bookValue: bookValue,
-                        //           isOpen: isOpen,
-                        //           exitDate: exitDate,
-                        //           marketValue: marketValue,
-                        //         );
-                        //       },
-                        //     ),
-                        //   ],
+                        // CircleActionButtons(
+                        //   editFunction: () async {
+                        //     _forexController.resetFormValues();
+                        //     await editTradeModalBottomSheet(
+                        //       id: id,
+                        //       currencyPair: instrument,
+                        //       entryDate: entryDate,
+                        //       bookValue: bookValue,
+                        //       isOpen: isOpen,
+                        //       exitDate: exitDate,
+                        //       marketValue: marketValue,
+                        //     );
+                        //   },
+                        //   deleteFunction: () async {
+                        //     await _forexController.confirmDelete(
+                        //       index: int.parse(id),
+                        //     );
+                        //   },
                         // ),
                       ],
                     ),
@@ -250,7 +261,11 @@ class _ForexIsOpenWidgetState extends State<ForexIsOpenWidget> {
             }).toList(),
           );
         } else {
-          return const CircularProgressIndicator();
+          return const Center(
+            child: CircularProgressIndicator(
+              color: kThemeRed,
+            ),
+          );
         }
       },
     );
@@ -684,6 +699,81 @@ class _ForexIsOpenWidgetState extends State<ForexIsOpenWidget> {
           },
         );
       },
+    );
+  }
+}
+
+class CircleActionButtons extends StatelessWidget {
+  const CircleActionButtons({
+    Key? key,
+    required this.editFunction,
+    required this.deleteFunction,
+  }) : super(key: key);
+
+  final Function() editFunction;
+  final Function() deleteFunction;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Container(
+          // height: 50,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.blue.shade200,
+                Colors.red.shade200,
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade300,
+                spreadRadius: 4,
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              )
+            ],
+          ),
+          child: IconButton(
+            onPressed: editFunction,
+            icon: const Icon(Icons.edit_rounded),
+            iconSize: 28,
+            color: kWhite,
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(left: 8, right: 6),
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomCenter,
+              colors: [
+                Colors.blue.shade200.withOpacity(0.5),
+                Colors.red.shade200.withOpacity(0.5),
+              ],
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.shade300,
+                spreadRadius: 4,
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              )
+            ],
+          ),
+          child: IconButton(
+            onPressed: deleteFunction,
+            icon: const Icon(Icons.delete_rounded),
+            iconSize: 28,
+            color: Colors.red.shade600,
+          ),
+        ),
+      ],
     );
   }
 }

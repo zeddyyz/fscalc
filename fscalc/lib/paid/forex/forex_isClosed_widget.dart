@@ -1,9 +1,10 @@
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:fscalc/free/components/cupertino_close_icon.dart';
 import 'package:fscalc/free/components/cupertino_slideup_bar.dart';
 import 'package:fscalc/free/components/custom_button.dart';
@@ -20,12 +21,18 @@ class ForexIsClosedWidget extends StatefulWidget {
 }
 
 class _ForexIsClosedWidgetState extends State<ForexIsClosedWidget> {
-  int _index = 0;
-
   final ForexController _forexController = Get.find();
 
   final String _currencySymbol =
       storageBox.read("currencySymbol") ?? defaultCurrencySymbol;
+
+  static const ktsDetails = TextStyle(
+    fontSize: 16,
+    color: kBlack,
+    fontWeight: FontWeight.w500,
+  );
+
+  List<String> resultList = [];
 
   @override
   Widget build(BuildContext context) {
@@ -56,173 +63,132 @@ class _ForexIsClosedWidgetState extends State<ForexIsClosedWidget> {
           );
         }
 
-        // if (snapshot.connectionState == ConnectionState.waiting) {
-        //   return const Text("Loading");
-        // }'
-
         if (snapshot.hasData) {
-          return AnimationLimiter(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(
-                vertical: 20,
-              ),
-              children: snapshot.data!.docs.map((DocumentSnapshot document) {
-                Map<String, dynamic> data =
-                    document.data()! as Map<String, dynamic>;
+          return ListView(
+            shrinkWrap: true,
+            padding: const EdgeInsets.symmetric(
+              vertical: 20,
+            ),
+            children: snapshot.data!.docs.map((DocumentSnapshot document) {
+              Map<String, dynamic> data =
+                  document.data()! as Map<String, dynamic>;
 
-                var instrument = data['currencyPair'];
-                var bookValue = data['bookValue'];
-                var entryDate = data['entryDate'];
-                var exitDate = data['exitDate'];
-                var id = data['id'];
-                var isOpen = data['isOpen'];
-                var marketValue = data['marketValue'];
-                var result = data['result'];
+              var id = data['id'];
+              var instrument = data['currencyPair'];
+              var bookValue = data['bookValue'];
+              var entryDate = data['entryDate'];
+              var exitDate = data['exitDate'];
+              var isOpen = data['isOpen'];
+              var marketValue = data['marketValue'];
+              var result = data['result'];
 
-                return AnimationConfiguration.staggeredList(
-                  position: _index,
-                  duration: const Duration(milliseconds: 0),
-                  child: SlideAnimation(
-                    verticalOffset: 50,
-                    child: FadeInAnimation(
-                      child: GestureDetector(
-                        onTap: () {
-                          if (!mounted) return;
-                          setState(() {
-                            _index = int.parse(id);
-                          });
-                        },
-                        child: ExpandablePanel(
-                          header: Padding(
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 20,
-                            ),
-                            child: Text(
-                              instrument,
-                              style: const TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w700,
-                              ),
+              // if (_forexController.instrumentList.contains(instrument)) {
+              //   // log(_forexController.instrumentList.toString());
+              //   // log(instrument);
+              //   log(instrument);
+              //   _forexController.fetchPrices(instrument);
+              // }
+
+              String sum = "";
+
+              resultList.add(result);
+
+              for (var i = 0; i < resultList.length; i++) {
+                sum += double.parse(resultList[i]).toString();
+              }
+
+              log("SUM: $sum");
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Column(
+                  children: [
+                    Container(
+                      height: 150,
+                    ),
+                    Expanded(
+                      child: ExpandablePanel(
+                        header: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          child: Text(
+                            instrument,
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w700,
                             ),
                           ),
-                          collapsed: const SizedBox(),
-                          expanded: Container(
-                            margin: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 5,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              vertical: 16,
-                              horizontal: 20,
-                            ),
-                            decoration: BoxDecoration(
-                              color:
-                                  _index == _forexController.indexValue(val: id)
-                                      ? kThemeRed.withOpacity(0.8)
-                                      : kWhite,
-                              borderRadius: BorderRadius.circular(13),
-                            ),
-                            child: Row(
-                              children: [
-                                Column(
+                        ),
+                        collapsed: Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text("Current Profit/Loss: ",
+                                  style: ktsDetails),
+                              const SizedBox(height: 4),
+                              Text(
+                                _forexController
+                                    .readableDatefromMilliseconds(entryDate),
+                                style: ktsDetails,
+                              ),
+                            ],
+                          ),
+                        ),
+                        expanded: Padding(
+                          padding: const EdgeInsets.only(top: 4, bottom: 10),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // Text(
-                                    //   data['currencyPair'].toString(),
-                                    //   style: TextStyle(
-                                    //     fontSize: 16,
-                                    //     color: _index ==
-                                    //             _forexController.indexValue(
-                                    //                 val: data['id'])
-                                    //         ? kWhite
-                                    //         : kBlack,
-                                    //     fontWeight: _index ==
-                                    //             _forexController.indexValue(
-                                    //                 val: data['id'])
-                                    //         ? FontWeight.w700
-                                    //         : FontWeight.w500,
-                                    //   ),
-                                    // ),
                                     const SizedBox(height: 4),
                                     Text(
                                       "Cost: " + _currencySymbol + bookValue,
-                                      style: TextStyle(
+                                      style: ktsDetails,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      "Total Value: " +
+                                          _currencySymbol +
+                                          marketValue,
+                                      style: ktsDetails,
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      double.parse(result) > 0
+                                          ? "Profit: " +
+                                              _currencySymbol +
+                                              result
+                                          : "Loss: " + _currencySymbol + result,
+                                      style: const TextStyle(
                                         fontSize: 16,
-                                        color: _index ==
-                                                _forexController.indexValue(
-                                                    val: id)
-                                            ? kWhite
-                                            : kBlack,
-                                        fontWeight: _index ==
-                                                _forexController.indexValue(
-                                                    val: id)
-                                            ? FontWeight.w700
-                                            : FontWeight.w500,
+                                        color: kBlack,
+                                        fontWeight: FontWeight.w700,
                                       ),
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
                                       "Entry: ${_forexController.readableDatefromMilliseconds(entryDate)}",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: _index ==
-                                                _forexController.indexValue(
-                                                    val: id)
-                                            ? kWhite
-                                            : kBlack,
-                                        fontWeight: _index ==
-                                                _forexController.indexValue(
-                                                    val: id)
-                                            ? FontWeight.w700
-                                            : FontWeight.w500,
-                                      ),
+                                      style: ktsDetails,
                                     ),
                                     const SizedBox(height: 4),
                                     Text(
-                                      "Position Currently Open",
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        color: _index ==
-                                                _forexController.indexValue(
-                                                    val: id)
-                                            ? kWhite
-                                            : kBlack,
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                    )
+                                      "Close: ${_forexController.readableDatefromMilliseconds(exitDate)}",
+                                      style: ktsDetails,
+                                    ),
+                                    const SizedBox(height: 4),
                                   ],
                                 ),
-                                const Spacer(),
-                                Column(
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(right: 10),
+                                child: Column(
                                   children: [
-                                    IconButton(
-                                      icon: Icon(
-                                        Icons.delete_forever_rounded,
-                                        color: _index ==
-                                                _forexController.indexValue(
-                                                    val: id)
-                                            ? kWhite
-                                            : kBlack.withOpacity(0.7),
-                                      ),
-                                      onPressed: () async {
-                                        await _forexController.confirmDelete(
-                                          index: id,
-                                        );
-                                      },
-                                    ),
-                                    IconButton(
-                                      icon: Icon(
-                                        Icons.edit,
-                                        color: _index ==
-                                                _forexController.indexValue(
-                                                    val: id)
-                                            ? kWhite
-                                            : kBlack.withOpacity(0.7),
-                                      ),
-                                      onPressed: () {
+                                    InkWell(
+                                      onTap: () async {
                                         _forexController.resetFormValues();
-                                        editTradeModalBottomSheet(
+                                        await editTradeModalBottomSheet(
                                           id: id,
                                           currencyPair: instrument,
                                           entryDate: entryDate,
@@ -232,22 +198,95 @@ class _ForexIsClosedWidgetState extends State<ForexIsClosedWidget> {
                                           marketValue: marketValue,
                                         );
                                       },
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: kLightIndigo,
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                          boxShadow: [
+                                            BoxShadow(
+                                              color:
+                                                  kLightIndigo.withOpacity(0.3),
+                                              offset: const Offset(0, 4),
+                                              blurRadius: 8,
+                                              spreadRadius: 0,
+                                            ),
+                                          ],
+                                        ),
+                                        margin:
+                                            const EdgeInsets.only(bottom: 8),
+                                        width: 90,
+                                        height: 35,
+                                        child: const Center(
+                                          child: Text(
+                                            "Edit",
+                                            style: TextStyle(
+                                              color: kWhite,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                    InkWell(
+                                      onTap: () async {
+                                        await _forexController.confirmDelete(
+                                          index: int.parse(id),
+                                        );
+                                      },
+                                      child: Container(
+                                        width: 90,
+                                        height: 35,
+                                        decoration: BoxDecoration(
+                                          gradient: const LinearGradient(
+                                            colors: [kLightIndigo, Colors.red],
+                                          ),
+                                          border: Border.all(
+                                            color: kLightIndigo,
+                                          ),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
+                                        ),
+                                        padding: const EdgeInsets.all(0.8),
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: kBackgroundColor,
+                                            border: Border.all(
+                                                color: kBackgroundColor),
+                                            borderRadius:
+                                                BorderRadius.circular(6),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 14,
+                                            vertical: 8,
+                                          ),
+                                          child: const Center(
+                                            child: Text(
+                                              "Delete",
+                                              style: TextStyle(
+                                                color: kLightIndigo,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ],
-                            ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              }).toList(),
-            ),
+                  ],
+                ),
+              );
+            }).toList(),
           );
         } else {
-          return const CircularProgressIndicator();
+          return const Center(child: CircularProgressIndicator());
         }
       },
     );

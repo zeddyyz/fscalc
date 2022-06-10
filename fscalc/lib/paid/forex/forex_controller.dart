@@ -1,13 +1,15 @@
-import 'dart:developer';
+import 'dart:convert';
 
 import 'package:another_flushbar/flushbar.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fscalc/free/utilities/constants.dart';
+import 'package:fscalc/paid/forex/forex_fetch_price_model.dart';
 import 'package:fscalc/paid/forex/forex_model.dart';
 import 'package:get/get.dart';
 import 'package:jiffy/jiffy.dart';
+import 'package:http/http.dart' as http;
 
 class ForexController extends GetxController {
   FirebaseAuth firebaseAuth = FirebaseAuth.instance;
@@ -16,14 +18,28 @@ class ForexController extends GetxController {
   CollectionReference ref =
       FirebaseFirestore.instance.collection("forexHistory");
   User? _user;
+  final _alphaAdvantageAPIKey = "5CQBRHYTAMD23LT8";
+  final _fcsapiAPIKey = "r5fGjF9Zr1Ar2Wf9qZ5l6ce98";
+
+  List<String> instrumentList = [];
 
   var username = "".obs;
+
+  var indexOfView = 0.obs;
+  var pageController = PageController();
 
   @override
   void onInit() {
     super.onInit();
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       user != null ? _user = user : null;
+      forexStreamOpenHistory().forEach((element) {
+        for (var i in element.docs) {
+          Map<String, dynamic> data = i.data()! as Map<String, dynamic>;
+          instrumentList.add(data["currencyPair"]);
+          // fetchPrices(data["currencyPair"]);
+        }
+      });
     });
   }
 
@@ -48,6 +64,48 @@ class ForexController extends GetxController {
         username.value = i.data().values.last;
       }
     });
+  }
+
+  // * API calls to retrieve values
+  Future<ForexFetchPriceModel> fetchPrices(String currency) async {
+    // var symbol = currency.split('/');
+    // print(symbol.toString());
+
+    // "https://www.alphavantage.co/query?function=FX_DAILY&from_symbol=" +
+    //     symbol.first +
+    //     "&to_symbol=" +
+    //     symbol.last +
+    //     "&interval=60min&apikey=" +
+    //     _alphaAdvantageAPIKey,
+
+    final http.Response response;
+
+    instrumentList.length == 1
+        ? response = await http.get(
+            Uri.parse(
+              "https://fcsapi.com/api-v3/forex/latest?symbol=" +
+                  currency +
+                  "&access_key=" +
+                  _fcsapiAPIKey,
+            ),
+          )
+        : response = await http.get(
+            Uri.parse(
+              "https://fcsapi.com/api-v3/forex/latest?symbol=" +
+                  instrumentList.join(",") +
+                  "&access_key=" +
+                  _fcsapiAPIKey,
+            ),
+          );
+
+    if (response.statusCode == 200) {
+      print(response.body);
+      return ForexFetchPriceModel.fromJson(jsonDecode(response.body));
+    } else {
+      print(response.statusCode.toString());
+      print(response.body);
+      throw Exception("Failed to load prices");
+    }
   }
 
   // * Firebase CRUD operations
@@ -161,7 +219,7 @@ class ForexController extends GetxController {
                 style: TextStyle(color: kWhite),
               ),
               onPressed: () async {
-                log("Delete command sent for $index");
+                print("Delete command sent for $index");
                 deleteTrade(id: index);
                 Get.back();
               },

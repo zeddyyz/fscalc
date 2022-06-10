@@ -1,7 +1,8 @@
+import 'dart:developer';
+
 import 'package:dropdown_button2/dropdown_button2.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rounded_date_picker/flutter_rounded_date_picker.dart';
-import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:fscalc/free/components/cupertino_close_icon.dart';
 import 'package:fscalc/free/components/cupertino_slideup_bar.dart';
 import 'package:fscalc/free/components/custom_button.dart';
@@ -11,7 +12,6 @@ import 'package:fscalc/paid/forex/forex_controller.dart';
 import 'package:fscalc/paid/forex/forex_isClosed_widget.dart';
 import 'package:fscalc/paid/forex/forex_isOpen_widget.dart';
 import 'package:get/get.dart';
-import 'package:tab_indicator_styler/tab_indicator_styler.dart';
 
 class ForexHistoryScreen extends StatelessWidget {
   const ForexHistoryScreen({Key? key}) : super(key: key);
@@ -31,74 +31,219 @@ class ForexHistoryScreen extends StatelessWidget {
         ),
         backgroundColor: kThemeRed,
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.chevron_left_rounded),
+          iconSize: 38,
+          onPressed: () {
+            Navigator.pop(context);
+            _forexController.indexOfView(0);
+          },
+        ),
         actions: [
           IconButton(
+            icon: const Icon(Icons.add),
+            iconSize: 30,
             onPressed: () {
               _forexController.resetFormValues();
               addTradeModalBottomSheet();
               // Get.to(() => const ForexAddTrade());
               // Get.back();
             },
-            icon: const Icon(Icons.add),
           ),
         ],
       ),
-      body: DefaultTabController(
-        length: 2,
-        child: SafeArea(
-          child: Column(
-            children: [
-              Material(
-                color: kThemeRed.withOpacity(0.97),
-                child: TabBar(
-                  indicatorColor: kThemeRed,
-                  tabs: const [
-                    Tab(
-                      text: "Open",
-                    ),
-                    Tab(
-                      text: "Closed",
-                    ),
-                  ],
-                  labelColor: kWhite,
-                  labelStyle: const TextStyle(
-                    fontWeight: FontWeight.w600,
-                    fontSize: 16,
-                  ),
-                  indicator: MaterialIndicator(
-                    height: 4,
-                    topLeftRadius: 8,
-                    topRightRadius: 8,
-                    horizontalPadding: 50,
-                    tabPosition: TabPosition.bottom,
-                    color: kWhite,
-                  ),
-                ),
+      body: Column(
+        children: [
+          Container(
+            height: 60,
+            decoration: BoxDecoration(
+              color: kThemeRed,
+              borderRadius: BorderRadius.vertical(
+                bottom: Radius.elliptical(screenWidth, 45),
               ),
-              const Expanded(
-                child: AnimationLimiter(
-                  child: AnimationConfiguration.staggeredList(
-                    position: 0,
-                    child: SlideAnimation(
-                      verticalOffset: 50,
-                      child: FadeInAnimation(
-                        child: TabBarView(
-                          children: [
-                            //* isOpen = true
-                            ForexIsOpenWidget(),
-                            // * isOpen = false
-                            ForexIsClosedWidget(),
-                          ],
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Spacer(),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      _forexController.indexOfView(0);
+                      _forexController.pageController.animateToPage(
+                        0,
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.linear,
+                      );
+                    },
+                    child: Obx(
+                      () => AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        decoration: BoxDecoration(
+                          color: _forexController.indexOfView.value == 0
+                              ? Colors.white.withOpacity(0.9)
+                              : Colors.transparent,
+                          borderRadius: const BorderRadius.horizontal(
+                            left: Radius.circular(12),
+                            right: Radius.circular(12),
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 26,
+                          vertical: 4,
+                        ),
+                        margin: const EdgeInsets.only(right: 8),
+                        child: Text(
+                          "Open",
+                          style: TextStyle(
+                            color: _forexController.indexOfView.value == 0
+                                ? kThemeRed
+                                : kWhite,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      _forexController.indexOfView(1);
+                      _forexController.pageController.animateToPage(
+                        1,
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.linear,
+                      );
+                    },
+                    child: Obx(
+                      () => AnimatedContainer(
+                        duration: const Duration(milliseconds: 400),
+                        decoration: BoxDecoration(
+                          color: _forexController.indexOfView.value == 1
+                              ? Colors.white.withOpacity(0.9)
+                              : Colors.transparent,
+                          borderRadius: const BorderRadius.horizontal(
+                            left: Radius.circular(12),
+                            right: Radius.circular(12),
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 25,
+                          vertical: 4,
+                        ),
+                        child: Text(
+                          "Closed",
+                          style: TextStyle(
+                            color: _forexController.indexOfView.value == 1
+                                ? kThemeRed
+                                : kWhite,
+                            fontSize: 16,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                const Spacer(),
+              ],
+            ),
           ),
-        ),
+          Expanded(
+            child: PageView.builder(
+              itemCount: 2,
+              onPageChanged: (view) {
+                switch (view) {
+                  case 0:
+                    _forexController.indexOfView(0);
+                    break;
+                  case 1:
+                    _forexController.indexOfView(1);
+                    break;
+                  default:
+                    break;
+                }
+              },
+              controller: _forexController.pageController,
+              itemBuilder: (context, position) {
+                if (position == 0) {
+                  return const ForexIsOpenWidget();
+                }
+
+                if (position == 1) {
+                  return const ForexIsClosedWidget();
+                }
+
+                return Container();
+              },
+            ),
+          ),
+        ],
       ),
+
+      // DefaultTabController(
+      //   length: 2,
+      //   child: Column(
+      //     children: [
+      //       Container(
+      //         padding: const EdgeInsets.only(bottom: 17),
+      //         decoration: BoxDecoration(
+      //           color: kThemeRed,
+      //           borderRadius: BorderRadius.vertical(
+      //             bottom: Radius.elliptical(screenWidth, 40),
+      //           ),
+      //         ),
+      //         child: const TabBar(
+      //           indicatorColor: kThemeRed,
+      //           tabs: [
+      //             Tab(
+      //               text: "Open",
+      //             ),
+      //             Tab(
+      //               text: "Closed",
+      //             ),
+      //           ],
+      //           labelColor: kBlack,
+      //           labelStyle: TextStyle(
+      //             fontWeight: FontWeight.w600,
+      //             fontSize: 16,
+      //           ),
+      //           indicator: null,
+      //           // MaterialIndicator(
+      //           //   height: 4,
+      //           //   topLeftRadius: 8,
+      //           //   topRightRadius: 8,
+      //           //   horizontalPadding: 50,
+      //           //   tabPosition: TabPosition.bottom,
+      //           //   color: kWhite.withOpacity(1),
+      //           // ),
+      //         ),
+      //       ),
+      //       const Expanded(
+      //         child: AnimationLimiter(
+      //           child: AnimationConfiguration.staggeredList(
+      //             position: 0,
+      //             child: SlideAnimation(
+      //               verticalOffset: 50,
+      //               child: FadeInAnimation(
+      //                 child: TabBarView(
+      //                   children: [
+      //                     //* isOpen = true
+      //                     ForexIsOpenWidget(),
+      //                     // * isOpen = false
+      //                     ForexIsClosedWidget(),
+      //                   ],
+      //                 ),
+      //               ),
+      //             ),
+      //           ),
+      //         ),
+      //       ),
+      //     ],
+      //   ),
+      // ),
     );
   }
 
@@ -453,7 +598,10 @@ class ForexHistoryScreen extends StatelessWidget {
                             title: "Add",
                             onTap: () {
                               var id = storageBox.read("id");
-                              id++;
+                              log("id: $id");
+                              id ??= 0;
+                              id++ ?? 0;
+                              // id++;
 
                               _forexController.addTrade(
                                 id: id.toString(),

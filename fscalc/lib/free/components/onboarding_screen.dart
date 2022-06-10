@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:fscalc/free/components/bottom_nav.dart';
-import 'package:fscalc/free/components/custom_button.dart';
 import 'package:fscalc/free/utilities/constants.dart';
 import 'package:fscalc/free/utilities/loading_screen.dart';
 import 'package:introduction_screen/introduction_screen.dart';
@@ -40,14 +39,14 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   }
 
   Future<void> onboarding() async {
-    bool? _value = storageBox.read("onboarding_shown");
+    bool? value = storageBox.read("onboarding_shown");
 
-    if (_value == null) {
+    if (value == null) {
       setState(() {
         _onboardingShown = false;
         _isLoading = false;
       });
-    } else if (_value == true) {
+    } else if (value == true) {
       setState(() {
         _onboardingShown = true;
         _isLoading = false;
@@ -69,7 +68,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     const pageDecoration = PageDecoration(
       titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.w700),
       bodyTextStyle: bodyStyle,
-      descriptionPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+      bodyPadding: EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
       pageColor: Colors.white,
       imagePadding: EdgeInsets.zero,
     );
@@ -126,7 +125,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           onDone: () => _onIntroEnd(context),
           //onSkip: () => _onIntroEnd(context), // You can override onSkip callback
           showSkipButton: false,
-          skipFlex: 0,
+          dotsFlex: 0,
           nextFlex: 0,
           skip: const Text(
             'Skip',
