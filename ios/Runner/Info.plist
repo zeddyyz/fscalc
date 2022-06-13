@@ -45,5 +45,9 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-6877946093850396~7859741742</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
 </dict>
 </plist>
