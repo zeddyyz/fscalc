@@ -1,0 +1,83 @@
+{
+  "project_info": {
+    "project_number": "1038467308148",
+    "project_id": "fscalc-f4d5e",
+    "storage_bucket": "fscalc-f4d5e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038467308148:android:ee7553e4b4c560d2e84f21",
+        "android_client_info": {
+          "package_name": "com.example.fscalc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1038467308148-s83thb0pso5qmv152rbfp2cgg3sg5dq0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQL0zeLVWtsaHB3rJVtzpE1w_RjcL9Ccc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1038467308148-s83thb0pso5qmv152rbfp2cgg3sg5dq0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1038467308148-3a5mjj1binf8alih9f8luttsvglt9rkf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.fscalc"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1038467308148:android:1a825d0f4e5fd841e84f21",
+        "android_client_info": {
+          "package_name": "com.zedd.fscalc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1038467308148-s83thb0pso5qmv152rbfp2cgg3sg5dq0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAQL0zeLVWtsaHB3rJVtzpE1w_RjcL9Ccc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1038467308148-s83thb0pso5qmv152rbfp2cgg3sg5dq0.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1038467308148-3a5mjj1binf8alih9f8luttsvglt9rkf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.fscalc"
+              }
+            }
+          ]
+        }
+      },
+      "admob_app_id": "ca-app-pub-6877946093850396~7874658383"
+    }
+  ],
+  "configuration_version": "1"
+}
