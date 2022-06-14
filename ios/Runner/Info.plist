@@ -49,5 +49,7 @@
 	<string>ca-app-pub-6877946093850396~7859741742</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>Our app uses this data through Google admob to display inline ads</string>
 </dict>
 </plist>
